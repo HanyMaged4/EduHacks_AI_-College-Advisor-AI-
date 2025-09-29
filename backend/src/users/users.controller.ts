@@ -1,24 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Delete, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { GetUser } from 'src/auth/Decorators/GetSomething';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('me')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
 
   @Get()
-  findOne() {
-    return this.usersService.findOne();
+  async findOne(@GetUser('id') userId: string) {
+    console.log("User ID:", userId);
+    return await this.usersService.findOne(userId);
   }
 
   @Patch()
-  update(@Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto);
+  async update(@GetUser('id') userId: string, @Body() updateUserDto: UpdateUserDto) {
+    return await this.usersService.update(userId, updateUserDto);
   }
 
   @Delete()
-  remove() {
-    return this.usersService.remove();
+  async remove(@GetUser('id') userId: string) {
+    return await this.usersService.remove(userId);
   }
 }

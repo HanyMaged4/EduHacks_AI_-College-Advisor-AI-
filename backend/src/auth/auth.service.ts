@@ -24,7 +24,12 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { username: user.username, sub: user.id };
+    console.log("Logging in user:", user);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    const payload = { username: user.username, id: user.id };
+    
     return {
       access_token: this.jwtService.sign(payload),
       user: user,
