@@ -31,7 +31,7 @@ export class AuthService {
     };
   }
 
-  async register(userData: CreateUserDto) {
+  async signup(userData: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     
     const user = await this.prisma.user.create({
