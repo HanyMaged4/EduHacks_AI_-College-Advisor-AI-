@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import { LoginOutlined, Google, GitHub } from '@mui/icons-material';
 import { useAuth } from '../../Context/AuthContext';
-
+import { loginAPI } from '../../APIs/auth';
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,14 +37,7 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
+      const response = await loginAPI(email, password);
       const data = await response.json();
 
       if (response.ok) {
@@ -54,6 +47,7 @@ const Login: React.FC = () => {
         setError(data.message || 'Login failed');
       }
     } catch (err) {
+      console.error(err);
       setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);
@@ -61,10 +55,11 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Box
+    <div style={{ backgroundColor: '#000000ff', minHeight: '100vh' , width: "100%"}}>
+<Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        // background: 'linear-gradient(135deg, #d5d1abff 0%, #764ba2 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -74,15 +69,7 @@ const Login: React.FC = () => {
       <Container maxWidth="sm">
         <Card sx={{ maxWidth: 480, mx: 'auto', boxShadow: 4 }}>
           <CardContent sx={{ p: 4 }}>
-            <Box textAlign="center" mb={3}>
-              <LoginOutlined color="primary" sx={{ fontSize: 48, mb: 2 }} />
-              <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
-                Welcome Back
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Sign in to your College Advisor account
-              </Typography>
-            </Box>
+            
 
             {error && (
               <Alert severity="error" sx={{ mb: 3 }}>
@@ -158,6 +145,8 @@ const Login: React.FC = () => {
         </Card>
       </Container>
     </Box>
+    </div>
+    
   );
 };
 
