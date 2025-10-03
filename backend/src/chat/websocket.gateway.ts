@@ -15,6 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { WsJwtAuthGuard } from '../auth/Guards/ws-jwt-auth.guard';
 import { WsGetUser } from '../auth/Decorators/ws-get-user.decorator';
+import { GeminiService } from 'src/knowledge/gemini.service';
 
 @WebSocketGateway({
   cors: {
@@ -31,6 +32,7 @@ export class SecureWebSocketGateway
   constructor(
     private jwtService: JwtService,
     private prisma: PrismaService,
+    private readonly geminiService: GeminiService, 
   ) {}
 
   afterInit(server: Server) {
@@ -90,6 +92,35 @@ export class SecureWebSocketGateway
       this.logger.log(`User ${user.username} disconnected`);
     }
   }
+
+  //chat message handler
+  @UseGuards(WsJwtAuthGuard)
+  @SubscribeMessage('chat')
+async handleMessagesRequest(
+  @MessageBody() data: { message: any },
+  @WsGetUser() user: any,
+) {
+  this.logger.log(`Chat message from ${user.username}: ${data.message}`);
+  // Send processing update first
+  this.server.to(`user_${user.id}`).emit('chat_update', {
+    status: 'processing',
+    message: 'Analyzing your message...',
+  });
+  try {
+    const response = await this.geminiService.generateResponse(data.message);
+    this.server.to(`user_${user.id}`).emit('chat_response', {
+      status: 'success',
+      message: response,
+    });
+  } catch (error) {
+    this.server.to(`user_${user.id}`).emit('chat_response', {
+      status: 'error',
+      message: 'Failed to generate response.',
+    });
+    this.logger.error(`Error generating response: ${error.message}`);
+  }
+}
+
 
   @UseGuards(WsJwtAuthGuard)
   @SubscribeMessage('college_recommendation_request')
