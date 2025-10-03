@@ -1,0 +1,83 @@
+{
+  "university_name": "University of California, Berkeley",
+  "location": {
+    "city": "Berkeley",
+    "state_province": "California",
+    "country": "United States"
+  },
+  "basic_info": {
+    "established_year": "1868",
+    "student_population": "Approx. 46,000 (undergraduate and graduate combined)",
+    "acceptance_rate": "11% (2025 overall, 15% CA residents, 8% non-residents, 5% international)",
+    "ranking_global": "8",
+    "website": "https://www.berkeley.edu",
+    "type": "public"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "Minimum 3.0 (CA residents), 3.4 (non-residents); competitive is 4.1+ weighted",
+      "sat_range": "N/A (UC system is test-free for admissions)",
+      "act_range": "N/A (UC system is test-free for admissions)",
+      "ielts_requirement": "6.5 overall minimum",
+      "toefl_requirement": "80 (iBT) minimum",
+      "essays_required": "Yes, 4 UC Personal Insight Questions required",
+      "letters_of_recommendation": "Not required for most applicants",
+      "application_fee": "$80 (US), $95 (International)",
+      "supplemental_materials": "Required for some majors (e.g., arts portfolios), not for most programs"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2025-12-01",
+    "early_action": "N/A",
+    "early_decision": "N/A",
+    "scholarship_deadline": "2026-03-02",
+    "housing_application": "2026-05-02"
+  },
+  "costs": {
+    "tuition_annual_usd": "14736 (CA resident), 48194 (Out-of-state/international)",
+    "room_board_annual_usd": "17878",
+    "total_cost_attendance": "32614 (CA resident), 66072 (Out-of-state/international)",
+    "financial_aid_available": "Yes; CA residents eligible for need-based aid including Cal Grant, Blue & Gold Opportunity Plan (tuition covered for families <$80,000), out-of-state/international merit scholarships limited",
+    "average_debt_graduation": "14000"
+  },
+  "popular_programs": [
+    "Computer Science",
+    "Economics",
+    "Electrical Engineering & Computer Sciences",
+    "Business Administration",
+    "Biology",
+    "Political Science",
+    "Mechanical Engineering",
+    "Environmental Science",
+    "Psychology",
+    "Data Science"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "A-G UC subject requirements (15 courses including history/social science, English, math, lab science, foreign language, arts, college-prep elective)"
+    ],
+    "recommended_courses": [
+      "Advanced Placement (AP) or IB coursework",
+      "Math and science courses beyond minimums"
+    ],
+    "extracurricular_importance": "Important for competitive applicants; leadership, achievements, and service valued"
+  },
+  "student_life": {
+    "campus_size": "1,232 acres",
+    "housing_guarantee": "Guaranteed for first-year students",
+    "dining_options": "Numerous dining halls, cafes, restaurants on campus and nearby",
+    "study_abroad_programs": "Numerous UC-wide and Berkeley-led programs available"
+  },
+  "special_features": [
+    "Top-ranked public research university",
+    "Large and diverse academic program selection",
+    "Strong entrepreneurial and innovation culture",
+    "Access to Bay Area and Silicon Valley careers",
+    "Vibrant campus activism and student organizations"
+  ],
+  "contact_info": {
+    "admissions_email": "ucberkadm@berkeley.edu",
+    "admissions_phone": "(510) 642-3175"
+  },
+  "last_updated": "2024-10-03"
+}

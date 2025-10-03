@@ -1,0 +1,87 @@
+{
+  "university_name": "University of Toronto",
+  "location": {
+    "city": "Toronto",
+    "state_province": "Ontario",
+    "country": "Canada"
+  },
+  "basic_info": {
+    "established_year": "1827",
+    "student_population": "Approx. 93,000 (all campuses combined undergraduate and graduate)",
+    "acceptance_rate": "43% (varies by program)",
+    "ranking_global": "18",
+    "website": "https://www.utoronto.ca",
+    "type": "public"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "Competitive, typically minimum 3.7/4.0 or equivalent",
+      "sat_range": "1330-1500 (some programs)",
+      "act_range": "29-34 (some programs)",
+      "ielts_requirement": "7.0 overall minimum",
+      "toefl_requirement": "100 overall minimum (iBT)",
+      "essays_required": "Required for some programs via supplemental applications",
+      "letters_of_recommendation": "Required for limited programs (generally not required for most undergraduate programs)",
+      "application_fee": "CA$180",
+      "supplemental_materials": "Required for specific programs (e.g., Engineering Online Student Profile, Music questionnaire, Rotman Commerce supplement)"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2026-01-15",
+    "early_action": "2025-11-07 (early consideration deadline)",
+    "early_decision": "N/A",
+    "scholarship_deadline": "2026-02-02 (program specific supplemental applications deadline)",
+    "housing_application": "2026-05-01"
+  },
+  "costs": {
+    "tuition_annual_usd": "Approx. $6,100 CAD (domestic, year 1), $61,000 CAD (international, year 1) - varies by program",
+    "room_board_annual_usd": "Approx. $12,000 CAD",
+    "total_cost_attendance": "Approx. $18,100 CAD (domestic), $73,000 CAD (international)",
+    "financial_aid_available": "Yes, need-based and merit scholarships available for domestic and international students",
+    "average_debt_graduation": "N/A"
+  },
+  "popular_programs": [
+    "Computer Science",
+    "Engineering",
+    "Business (Rotman Commerce)",
+    "Life Sciences",
+    "Psychology",
+    "Economics",
+    "Architecture",
+    "Political Science",
+    "Philosophy",
+    "Medicine (postgraduate)"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "English",
+      "Mathematics",
+      "Sciences",
+      "Social Sciences",
+      "Foreign Language (recommended)"
+    ],
+    "recommended_courses": [
+      "Advanced Placement (AP), IB or A-Level courses",
+      "Additional academic enrichment courses"
+    ],
+    "extracurricular_importance": "Moderately important; focus on leadership, community involvement, and passion"
+  },
+  "student_life": {
+    "campus_size": "721 acres (St. George campus)",
+    "housing_guarantee": "Guaranteed for first-year students",
+    "dining_options": "Multiple dining halls, cafes, and food courts with diverse options across campuses",
+    "study_abroad_programs": "Wide range of programs globally through exchange and faculty-led programs"
+  },
+  "special_features": [
+    "One of Canada's top ranked universities globally",
+    "Strong research focus with numerous research institutes",
+    "Diverse student population from over 160 countries",
+    "Three distinct campuses with unique cultural and academic environments",
+    "Extensive cooperative education and internship opportunities"
+  ],
+  "contact_info": {
+    "admissions_email": "ask.admissions@utoronto.ca",
+    "admissions_phone": "+1 416-978-2190"
+  },
+  "last_updated": "2024-10-03"
+}

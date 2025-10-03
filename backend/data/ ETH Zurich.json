@@ -1,0 +1,85 @@
+{
+  "university_name": "ETH Zurich (Swiss Federal Institute of Technology)",
+  "location": {
+    "city": "Zurich",
+    "state_province": "Canton of Zurich",
+    "country": "Switzerland"
+  },
+  "basic_info": {
+    "established_year": "1855",
+    "student_population": "Approx. 23,700 (undergraduate and graduate combined)",
+    "acceptance_rate": "Approx. 27%",
+    "ranking_global": "11",
+    "website": "https://ethz.ch",
+    "type": "public"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "Near equivalent of 38 out of 42 points in International Baccalaureate (IB) or equivalent qualifications with specific subject requirements",
+      "sat_range": "N/A",
+      "act_range": "N/A",
+      "ielts_requirement": "Generally IELTS 6.5 minimum",
+      "toefl_requirement": "Generally TOEFL 90 minimum",
+      "essays_required": "N/A",
+      "letters_of_recommendation": "N/A",
+      "application_fee": "CHF 100",
+      "supplemental_materials": "N/A"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2026-03-31",
+    "early_action": "N/A",
+    "early_decision": "N/A",
+    "scholarship_deadline": "Varies, generally before March 31, 2026",
+    "housing_application": "2026-05-15"
+  },
+  "costs": {
+    "tuition_annual_usd": "CHF 2,190 (approx. $2,390 USD per academic year as of 2025-26)",
+    "room_board_annual_usd": "Approx. $12,000 USD",
+    "total_cost_attendance": "Approx. $14,400 USD",
+    "financial_aid_available": "Limited financial aid and scholarships available; primarily merit-based",
+    "average_debt_graduation": "N/A"
+  },
+  "popular_programs": [
+    "Mechanical Engineering",
+    "Electrical Engineering and Information Technology",
+    "Computer Science",
+    "Architecture",
+    "Physics",
+    "Mathematics",
+    "Civil Engineering",
+    "Chemical and Biomolecular Engineering",
+    "Environmental Engineering",
+    "Biomedical Engineering"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "Mathematics and Physics at Higher Level (IB) or equivalent",
+      "Additional sciences (Chemistry, Biology) recommended",
+      "Language proficiency requirements"
+    ],
+    "recommended_courses": [
+      "Advanced Mathematics and Science courses",
+      "Strong performance in standardized international exams"
+    ],
+    "extracurricular_importance": "Moderate; strong technical skills and academic record prioritized"
+  },
+  "student_life": {
+    "campus_size": "Near city center, compact urban campus",
+    "housing_guarantee": "No universal housing guarantee; competitive student housing",
+    "dining_options": "Multiple dining halls, cafeterias with affordable meals",
+    "study_abroad_programs": "Exchange programs available with partner universities worldwide"
+  },
+  "special_features": [
+    "One of the top technical universities globally",
+    "Strong engineering and technology focus with cutting-edge research",
+    "Close industry partnerships in Switzerland and globally",
+    "Multilingual environment with emphasis on German and English",
+    "Low tuition fees compared to other top-tier universities"
+  ],
+  "contact_info": {
+    "admissions_email": "bachelor.chair@ethz.ch",
+    "admissions_phone": "+41 44 632 00 44"
+  },
+  "last_updated": "2024-10-03"
+}

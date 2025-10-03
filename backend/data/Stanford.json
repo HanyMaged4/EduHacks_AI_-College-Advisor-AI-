@@ -1,0 +1,88 @@
+{
+  "university_name": "Stanford University",
+  "location": {
+    "city": "Stanford",
+    "state_province": "California",
+    "country": "United States"
+  },
+  "basic_info": {
+    "established_year": "1885",
+    "student_population": "Approximately 17,000 (undergraduate and graduate combined)",
+    "acceptance_rate": "3.9%",
+    "ranking_global": "4",
+    "website": "https://www.stanford.edu",
+    "type": "private"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "Competitive, most students 3.9-4.0 unweighted",
+      "sat_range": "1450-1570",
+      "act_range": "32-35",
+      "ielts_requirement": "7.0 overall minimum",
+      "toefl_requirement": "100 (iBT) minimum",
+      "essays_required": "Yes, including common application essay and 3 Stanford-specific short essays",
+      "letters_of_recommendation": "Two teacher recommendations and one counselor recommendation required",
+      "application_fee": "$90",
+      "supplemental_materials": "Optional arts portfolios and additional information"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2026-01-05",
+    "early_action": "2025-11-01",
+    "early_decision": "N/A",
+    "scholarship_deadline": "2026-02-15",
+    "housing_application": "2026-05-01"
+  },
+  "costs": {
+    "tuition_annual_usd": "67731",
+    "room_board_annual_usd": "22167",
+    "total_cost_attendance": "96513",
+    "financial_aid_available": "Yes, generous need-based aid; no tuition for families earning under $150,000",
+    "average_debt_graduation": "13723"
+  },
+  "popular_programs": [
+    "Computer Science",
+    "Engineering",
+    "Biological Sciences",
+    "Economics",
+    "Psychology",
+    "Political Science",
+    "Human Biology",
+    "Mathematics",
+    "Management Science and Engineering",
+    "Symbolic Systems"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "Four years of English",
+      "Four years of mathematics",
+      "Three or more years of laboratory science",
+      "Three or more years of history/social studies",
+      "Three or more years of a foreign language"
+    ],
+    "recommended_courses": [
+      "Advanced mathematics",
+      "Fourth year of laboratory science",
+      "Fourth year of social studies"
+    ],
+    "extracurricular_importance": "Very important; Stanford seeks students with deep commitments and leadership"
+  },
+  "student_life": {
+    "campus_size": "8180 acres",
+    "housing_guarantee": "Guaranteed for all four years to undergraduates",
+    "dining_options": "20+ campus dining halls, numerous cafes and specialty venues",
+    "study_abroad_programs": "Extensive Bing Overseas Studies programs and global partnerships"
+  },
+  "special_features": [
+    "Renowned entrepreneurial and innovation ecosystem",
+    "Leading research facilities in AI, engineering, and sciences",
+    "Interdisciplinary learning and flexible curriculum",
+    "Robust financial aid and minimal student loan debt",
+    "Diverse student body representing over 70 countries"
+  ],
+  "contact_info": {
+    "admissions_email": "admission@stanford.edu",
+    "admissions_phone": "(650) 723-2091"
+  },
+  "last_updated": "2024-10-03"
+}

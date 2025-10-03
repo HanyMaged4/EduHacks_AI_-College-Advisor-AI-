@@ -1,0 +1,85 @@
+{
+  "university_name": "University of Oxford",
+  "location": {
+    "city": "Oxford",
+    "state_province": "Oxfordshire",
+    "country": "United Kingdom"
+  },
+  "basic_info": {
+    "established_year": "1096",
+    "student_population": "Approx. 24,000 (undergraduate and graduate combined)",
+    "acceptance_rate": "17.5%",
+    "ranking_global": "3",
+    "website": "https://www.ox.ac.uk",
+    "type": "public"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "N/A (UK system: A-levels required or equivalent qualifications with typically A*AA to AAA grades)",
+      "sat_range": "N/A",
+      "act_range": "N/A",
+      "ielts_requirement": "7.0 overall, with minimum 6.5 in each component",
+      "toefl_requirement": "110 overall (iBT), with component minimum scores",
+      "essays_required": "Yes, personal statement via UCAS and written work for some courses",
+      "letters_of_recommendation": "One academic reference required",
+      "application_fee": "£28.50 (UCAS application fee)",
+      "supplemental_materials": "Written work for some courses; admissions tests required for many courses"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2026-10-15",
+    "early_action": "N/A",
+    "early_decision": "N/A",
+    "scholarship_deadline": "2026-01-10 (varies by scholarship)",
+    "housing_application": "2026-06-01"
+  },
+  "costs": {
+    "tuition_annual_usd": "£9,535 (approx. $11,900) for UK/EU students; £27,000 to £59,000 (approx. $33,700 to $73,700) for international students depending on course",
+    "room_board_annual_usd": "Approx. £7,850 ($9,700)",
+    "total_cost_attendance": "Approx. £17,385 to £66,535 ($21,600 to $83,400) depending on residency and course",
+    "financial_aid_available": "Yes, scholarships and bursaries available, highly competitive for international students",
+    "average_debt_graduation": "N/A"
+  },
+  "popular_programs": [
+    "Philosophy, Politics and Economics (PPE)",
+    "Medicine",
+    "Law",
+    "Economics",
+    "Computer Science",
+    "Engineering Science",
+    "Mathematics",
+    "History",
+    "English Language and Literature",
+    "Biological Sciences"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "Subjects as per course requirements, generally A-levels or equivalent with high grades",
+      "Mathematics required for science and engineering courses",
+      "Modern Foreign Language or Classical Language where specified"
+    ],
+    "recommended_courses": [
+      "Further Mathematics for some STEM courses",
+      "Additional subjects demonstrating breadth and depth"
+    ],
+    "extracurricular_importance": "Moderately considered; intellectual curiosity and academic potential prioritized"
+  },
+  "student_life": {
+    "campus_size": "N/A (City wide collegiate university)",
+    "housing_guarantee": "No universal guarantee; many colleges offer guaranteed accommodation for first-year students",
+    "dining_options": "College dining halls and catering services vary by college; some offer formal dinners",
+    "study_abroad_programs": "Limited undergraduate study abroad, mostly postgraduate exchanges"
+  },
+  "special_features": [
+    "Oldest university in the English-speaking world",
+    "Collegiate system with over 30 autonomous colleges",
+    "Global reputation for academic excellence and research",
+    "Extensive tutorial system for personalized learning",
+    "Strong international alumni network"
+  ],
+  "contact_info": {
+    "admissions_email": "undergraduate.admissions@admin.ox.ac.uk",
+    "admissions_phone": "+44 1865 270000"
+  },
+  "last_updated": "2024-10-03"
+}

@@ -1,0 +1,88 @@
+{
+  "university_name": "Massachusetts Institute of Technology",
+  "location": {
+    "city": "Cambridge",
+    "state_province": "Massachusetts",
+    "country": "United States"
+  },
+  "basic_info": {
+    "established_year": "1861",
+    "student_population": "Approximately 11,520 (undergraduate and graduate combined)",
+    "acceptance_rate": "4.52%",
+    "ranking_global": "1-3 (varies by ranking source, consistently top 3 globally)",
+    "website": "https://mit.edu",
+    "type": "private"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "Competitive, typically 4.0 unweighted or equivalent",
+      "sat_range": "1450-1570",
+      "act_range": "34-36",
+      "ielts_requirement": "7.5 overall recommended",
+      "toefl_requirement": "100 overall recommended",
+      "essays_required": "Yes, including several supplemental essays",
+      "letters_of_recommendation": "Two required (one math/science teacher, one humanities/social science/language teacher)",
+      "application_fee": "$75",
+      "supplemental_materials": "Optional additional information or portfolios"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2026-01-05",
+    "early_action": "2025-11-01",
+    "early_decision": "N/A",
+    "scholarship_deadline": "N/A",
+    "housing_application": "2026-06-01"
+  },
+  "costs": {
+    "tuition_annual_usd": "64310",
+    "room_board_annual_usd": "13550",
+    "total_cost_attendance": "89340",
+    "financial_aid_available": "Yes, need-based aid available with full tuition free for families under $200,000",
+    "average_debt_graduation": "$15000"
+  },
+  "popular_programs": [
+    "Computer Science and Engineering",
+    "Electrical Engineering and Computer Science",
+    "Mechanical Engineering",
+    "Aeronautics and Astronautics",
+    "Physics",
+    "Mathematics",
+    "Biology",
+    "Economics",
+    "Finance",
+    "Architecture"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "Four years of English",
+      "Four years of math including calculus",
+      "Two years of laboratory science",
+      "Two years of social studies",
+      "Foreign language recommended"
+    ],
+    "recommended_courses": [
+      "Additional math beyond calculus",
+      "Advanced science courses",
+      "Computer programming"
+    ],
+    "extracurricular_importance": "Highly important, with emphasis on leadership, creativity, and innovation"
+  },
+  "student_life": {
+    "campus_size": "168 acres",
+    "housing_guarantee": "Guaranteed for all four years",
+    "dining_options": "Extensive dining halls, cafes, and meal plans",
+    "study_abroad_programs": "Available through MIT International Science and Technology Initiatives and partner programs"
+  },
+  "special_features": [
+    "Strong entrepreneurship and innovation culture",
+    "Cutting-edge research labs like CSAIL",
+    "Need-blind admissions for US students",
+    "Tuition-free policy for families with income under $200,000",
+    "Extensive STEM-focused interdisciplinary programs"
+  ],
+  "contact_info": {
+    "admissions_email": "admissions@mit.edu",
+    "admissions_phone": "(617) 253-3400"
+  },
+  "last_updated": "2024-10-03"
+}

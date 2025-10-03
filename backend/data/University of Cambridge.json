@@ -1,0 +1,85 @@
+{
+  "university_name": "University of Cambridge",
+  "location": {
+    "city": "Cambridge",
+    "state_province": "Cambridgeshire",
+    "country": "United Kingdom"
+  },
+  "basic_info": {
+    "established_year": "1209",
+    "student_population": "Approx. 24,900 (undergraduate and graduate combined)",
+    "acceptance_rate": "21.2%",
+    "ranking_global": "5",
+    "website": "https://www.cam.ac.uk",
+    "type": "public"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "N/A (UK system with equivalent high-level qualifications such as A-levels AAA to A*A*A)",
+      "sat_range": "N/A",
+      "act_range": "N/A",
+      "ielts_requirement": "7.0 overall with minimum 6.5 in each component",
+      "toefl_requirement": "110 overall (iBT)",
+      "essays_required": "Yes, personal statement via UCAS and additional written work for some courses",
+      "letters_of_recommendation": "One academic reference required",
+      "application_fee": "£28.50 (UCAS fee)",
+      "supplemental_materials": "Written work for certain courses; admissions tests required for many courses"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2026-10-15",
+    "early_action": "N/A",
+    "early_decision": "N/A",
+    "scholarship_deadline": "2026-01-10 (varies by scholarship)",
+    "housing_application": "2026-06-01"
+  },
+  "costs": {
+    "tuition_annual_usd": "£9,535 (approximately $11,900) for UK/EU students; £27,000 to £59,000 (approximately $33,700 to $73,700) for international students depending on course",
+    "room_board_annual_usd": "Approximately £7,850 ($9,700)",
+    "total_cost_attendance": "Approximately £17,385 to £66,535 ($21,600 to $83,400) depending on residency and course",
+    "financial_aid_available": "Yes, scholarships and bursaries available, highly competitive for international students",
+    "average_debt_graduation": "N/A"
+  },
+  "popular_programs": [
+    "Philosophy, Politics and Economics (PPE)",
+    "Medicine",
+    "Law",
+    "Economics",
+    "Computer Science",
+    "Engineering Science",
+    "Mathematics",
+    "History",
+    "English Language and Literature",
+    "Biological Sciences"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "Course-specific A-level or equivalent subjects with high grades (typically A*AA or AAA)",
+      "Mathematics required for STEM courses",
+      "Foreign Language or Classical Language for some courses"
+    ],
+    "recommended_courses": [
+      "Further Mathematics encouraged for STEM courses",
+      "Additional A-levels or IB subjects recommended for broader preparation"
+    ],
+    "extracurricular_importance": "Moderately considered; strong emphasis on academic excellence and potential"
+  },
+  "student_life": {
+    "campus_size": "N/A (city-wide collegiate university)",
+    "housing_guarantee": "Many colleges guarantee accommodation for first-year students",
+    "dining_options": "College dining halls with a variety of traditional and modern options",
+    "study_abroad_programs": "Limited undergraduate study abroad, mainly postgraduate exchanges"
+  },
+  "special_features": [
+    "One of the world's oldest and most prestigious universities",
+    "Collegiate system with over 30 autonomous colleges",
+    "Strong tutorial system ensuring personalized academic support",
+    "Extensive research opportunities",
+    "Global network of alumni and collaborations"
+  ],
+  "contact_info": {
+    "admissions_email": "undergraduate.admissions@admin.ox.ac.uk",
+    "admissions_phone": "+44 1223 337733"
+  },
+  "last_updated": "2024-10-03"
+}

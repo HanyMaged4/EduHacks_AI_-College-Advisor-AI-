@@ -1,0 +1,88 @@
+{
+  "university_name": "University of Michigan",
+  "location": {
+    "city": "Ann Arbor",
+    "state_province": "Michigan",
+    "country": "United States"
+  },
+  "basic_info": {
+    "established_year": "1817",
+    "student_population": "Approximately 48,000 (undergraduate and graduate combined)",
+    "acceptance_rate": "15.6%",
+    "ranking_global": "26",
+    "website": "https://www.umich.edu",
+    "type": "public"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "Competitive applicants typically have GPAs above 3.8 weighted",
+      "sat_range": "Test-optional; scores typically 1350-1530 for submitted SAT",
+      "act_range": "Test-optional; scores typically 30-34 for submitted ACT",
+      "ielts_requirement": "7.0 minimum recommended",
+      "toefl_requirement": "100 minimum recommended (iBT)",
+      "essays_required": "Yes, two supplemental essays: leadership/citizenship and program-specific",
+      "letters_of_recommendation": "Not generally required",
+      "application_fee": "$75",
+      "supplemental_materials": "Optional for some programs (e.g., arts portfolios)"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2026-02-01",
+    "early_action": "2025-11-01",
+    "early_decision": "2025-11-01",
+    "scholarship_deadline": "2026-03-31",
+    "housing_application": "2026-05-01"
+  },
+  "costs": {
+    "tuition_annual_usd": "16450 (in-state), 55000 (out-of-state/international)",
+    "room_board_annual_usd": "11500",
+    "total_cost_attendance": "27950 (in-state), 66500 (out-of-state/international)",
+    "financial_aid_available": "Yes, need-based aid available including scholarships and grants",
+    "average_debt_graduation": "15000"
+  },
+  "popular_programs": [
+    "Business",
+    "Engineering",
+    "Computer Science",
+    "Nursing",
+    "Psychology",
+    "Biology",
+    "Political Science",
+    "Economics",
+    "Communications",
+    "Social Work"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "4 years of English",
+      "3 years of Mathematics (including Algebra II)",
+      "3 years of Science (including 1 year of lab science)",
+      "3 years of Social Studies",
+      "2 years of Foreign Language"
+    ],
+    "recommended_courses": [
+      "4 years of Mathematics",
+      "4 years of Science",
+      "Extra electives in AP/IB or honors courses"
+    ],
+    "extracurricular_importance": "Highly important; leadership, service, and achievements strongly valued"
+  },
+  "student_life": {
+    "campus_size": "3200 acres",
+    "housing_guarantee": "Guaranteed for first-year students",
+    "dining_options": "Multiple dining halls, cafes, and food courts with diverse offerings",
+    "study_abroad_programs": "Extensive study abroad programs with global partner universities"
+  },
+  "special_features": [
+    "New Early Decision option starting 2025-2026 cycle",
+    "Integrated Business and Engineering dual degree program",
+    "Strong emphasis on leadership and community engagement",
+    "Robust research opportunities across disciplines",
+    "Large public research university with strong alumni network"
+  ],
+  "contact_info": {
+    "admissions_email": "admissions@umich.edu",
+    "admissions_phone": "(734) 764-7433"
+  },
+  "last_updated": "2024-10-03"
+}

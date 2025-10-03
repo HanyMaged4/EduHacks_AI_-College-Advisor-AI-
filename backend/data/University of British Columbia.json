@@ -1,0 +1,87 @@
+{
+  "university_name": "University of British Columbia",
+  "location": {
+    "city": "Vancouver",
+    "state_province": "British Columbia",
+    "country": "Canada"
+  },
+  "basic_info": {
+    "established_year": "1908",
+    "student_population": "Approx. 66,000 (all campuses combined undergraduate and graduate)",
+    "acceptance_rate": "52%",
+    "ranking_global": "34",
+    "website": "https://www.ubc.ca",
+    "type": "public"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "Competitive, generally minimum 3.7 on a 4.0 scale or equivalent",
+      "sat_range": "1330-1500 (varies by program and if submitted)",
+      "act_range": "29-34 (varies by program and if submitted)",
+      "ielts_requirement": "7.0 overall minimum",
+      "toefl_requirement": "90-100 overall minimum (iBT)",
+      "essays_required": "Required for some programs",
+      "letters_of_recommendation": "Required for limited programs, generally not for most undergraduate admissions",
+      "application_fee": "CAD $180",
+      "supplemental_materials": "Required for some specific programs (e.g., Engineering, Music, Commerce)"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2026-01-15",
+    "early_action": "2025-11-15 (scholarship and awards deadline)",
+    "early_decision": "N/A",
+    "scholarship_deadline": "2025-11-15",
+    "housing_application": "2026-05-01"
+  },
+  "costs": {
+    "tuition_annual_usd": "Approx. CAD 6,079 (domestic arts/science programs) to CAD 63,654 (international engineering)",
+    "room_board_annual_usd": "Approx. CAD 12,000",
+    "total_cost_attendance": "Approx. CAD 18,000 (domestic), CAD 75,000 (international)",
+    "financial_aid_available": "Yes, merit-based and need-based aid available for domestic and international students",
+    "average_debt_graduation": "N/A"
+  },
+  "popular_programs": [
+    "Computer Science",
+    "Engineering",
+    "Business (Sauder School of Business)",
+    "Life Sciences",
+    "Psychology",
+    "Economics",
+    "Environmental Science",
+    "Architecture",
+    "Music",
+    "Kinesiology"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "English",
+      "Mathematics",
+      "Sciences",
+      "Social Sciences",
+      "Foreign Language (recommended)"
+    ],
+    "recommended_courses": [
+      "Advanced Placement (AP), IB, or A-Level courses",
+      "Additional academic enrichment courses"
+    ],
+    "extracurricular_importance": "Moderate to high; demonstrated leadership, community involvement, and passion for chosen field valued"
+  },
+  "student_life": {
+    "campus_size": "400 acres (Vancouver campus)",
+    "housing_guarantee": "Guaranteed for first-year students",
+    "dining_options": "Multiple cafes, dining halls, and food vendors on campus",
+    "study_abroad_programs": "Comprehensive study abroad and exchange opportunities"
+  },
+  "special_features": [
+    "Research-intensive university with global reputation",
+    "Diverse student body from over 160 countries",
+    "Three campuses with Vancouver and Okanagan main campuses",
+    "Strong focus on sustainability and Indigenous engagement",
+    "Robust co-op and internship programs"
+  ],
+  "contact_info": {
+    "admissions_email": "ug.admissions@ubc.ca",
+    "admissions_phone": "+1 604-822-9834"
+  },
+  "last_updated": "2024-10-03"
+}

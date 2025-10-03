@@ -1,0 +1,87 @@
+{
+  "university_name": "Harvard University",
+  "location": {
+    "city": "Cambridge",
+    "state_province": "Massachusetts",
+    "country": "United States"
+  },
+  "basic_info": {
+    "established_year": "1636",
+    "student_population": "Approximately 22,000 (undergraduate and graduate combined)",
+    "acceptance_rate": "3.65%",
+    "ranking_global": "2",
+    "website": "https://www.harvard.edu",
+    "type": "private"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "Highly competitive; most admitted students 3.9-4.0 unweighted GPA",
+      "sat_range": "1480-1580",
+      "act_range": "33-35",
+      "ielts_requirement": "7.5 overall minimum",
+      "toefl_requirement": "100 (iBT) minimum",
+      "essays_required": "Yes, Common App essay and multiple Harvard-specific writing supplements",
+      "letters_of_recommendation": "Two teacher recommendations and one counselor recommendation required",
+      "application_fee": "$85",
+      "supplemental_materials": "Optional arts or research portfolios"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2026-01-01",
+    "early_action": "2025-11-01",
+    "early_decision": "N/A",
+    "scholarship_deadline": "2026-02-15",
+    "housing_application": "2026-05-01"
+  },
+  "costs": {
+    "tuition_annual_usd": "57328",
+    "room_board_annual_usd": "23730",
+    "total_cost_attendance": "89238",
+    "financial_aid_available": "Yes. For 2025-26, tuition is free for families earning up to $200,000; all costs covered for families under $100,000; robust need-based aid for all",
+    "average_debt_graduation": "13400"
+  },
+  "popular_programs": [
+    "Economics",
+    "Computer Science",
+    "Government",
+    "Biology",
+    "Social Studies",
+    "Psychology",
+    "Applied Mathematics",
+    "Engineering Sciences",
+    "History",
+    "Physics"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "Four years of English",
+      "Four years of mathematics",
+      "Four years of science (including biology, chemistry, and physics)",
+      "Three years of history/social studies",
+      "Four years of a single foreign language"
+    ],
+    "recommended_courses": [
+      "Advanced courses in mathematics and science",
+      "Additional coursework in social sciences and humanities"
+    ],
+    "extracurricular_importance": "Extremely important; strong leadership, talent, and sustained commitment are highly valued"
+  },
+  "student_life": {
+    "campus_size": "209 acres (Cambridge campus)",
+    "housing_guarantee": "Guaranteed for all four undergraduate years",
+    "dining_options": "12 residential dining halls plus specialty cafés and campus eateries",
+    "study_abroad_programs": "Extensive options through Harvard College and partner institutions"
+  },
+  "special_features": [
+    "Tuition-free for families earning up to $200,000 (from 2025-26 onwards)",
+    "Extensive undergraduate research opportunities",
+    "Global network of alumni and resources",
+    "Interdisciplinary academic programs",
+    "Diverse and inclusive campus culture"
+  ],
+  "contact_info": {
+    "admissions_email": "college@fas.harvard.edu",
+    "admissions_phone": "(617) 495-1551"
+  },
+  "last_updated": "2024-10-03"
+}

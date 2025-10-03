@@ -1,0 +1,87 @@
+{
+  "university_name": "Georgia Institute of Technology",
+  "location": {
+    "city": "Atlanta",
+    "state_province": "Georgia",
+    "country": "United States"
+  },
+  "basic_info": {
+    "established_year": "1885",
+    "student_population": "Approx. 36,000 (undergraduate and graduate combined)",
+    "acceptance_rate": "17%",
+    "ranking_global": "100",
+    "website": "https://www.gatech.edu",
+    "type": "public"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "Competitive, typically 3.7+ weighted GPA",
+      "sat_range": "1200-1480 (if submitted, test optional)",
+      "act_range": "27-33 (if submitted, test optional)",
+      "ielts_requirement": "7.0 overall recommended",
+      "toefl_requirement": "90 overall recommended",
+      "essays_required": "Yes, Common Application essay and Georgia Tech supplemental essay",
+      "letters_of_recommendation": "One teacher evaluation required",
+      "application_fee": "$75",
+      "supplemental_materials": "Optional for some programs (e.g., arts portfolios)"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2026-01-06",
+    "early_action": "2025-11-01 (Early Action 2 for Non-Georgia Residents), 2025-10-15 (Early Action 1 for Georgia residents)",
+    "early_decision": "N/A",
+    "scholarship_deadline": "2026-01-23 (document deadline)",
+    "housing_application": "2026-05-01"
+  },
+  "costs": {
+    "tuition_annual_usd": "10512 (in-state), 33796 (out-of-state/international)",
+    "room_board_annual_usd": "11500",
+    "total_cost_attendance": "22012 (in-state), 45296 (out-of-state/international)",
+    "financial_aid_available": "Yes, need-based and merit-based aid available",
+    "average_debt_graduation": "17000"
+  },
+  "popular_programs": [
+    "Computer Science",
+    "Engineering (Electrical, Mechanical, Aerospace)",
+    "Business Administration (Management)",
+    "Biology",
+    "Data Science",
+    "Industrial Engineering",
+    "Architecture",
+    "Cybersecurity",
+    "Robotics",
+    "Environmental Engineering"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "Four years English",
+      "Four years Mathematics including calculus",
+      "Three years Science with at least two lab sciences",
+      "At least three years Social Studies",
+      "Recommended: Foreign language courses"
+    ],
+    "recommended_courses": [
+      "Additional advanced math and science courses",
+      "Computer programming or technology courses"
+    ],
+    "extracurricular_importance": "Important; leadership, innovation, and STEM-related activities highly valued"
+  },
+  "student_life": {
+    "campus_size": "400 acres",
+    "housing_guarantee": "Guaranteed for first-year students",
+    "dining_options": "Multiple dining halls, cafes, food courts with variety of cuisines",
+    "study_abroad_programs": "Available through GT Global Learning programs"
+  },
+  "special_features": [
+    "Strong focus on technology and engineering education",
+    "Close ties with industries in Atlanta and Silicon Valley",
+    "Extensive undergraduate research opportunities",
+    "High return on investment with strong career placement",
+    "Modern campus with high-tech labs and innovation centers"
+  ],
+  "contact_info": {
+    "admissions_email": "admission@gatech.edu",
+    "admissions_phone": "(404) 894-4154"
+  },
+  "last_updated": "2024-10-03"
+}

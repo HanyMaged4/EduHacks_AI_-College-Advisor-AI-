@@ -18,7 +18,7 @@ import { WsGetUser } from '../auth/Decorators/ws-get-user.decorator';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL || '*',
     credentials: true,
   },
 })

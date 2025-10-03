@@ -1,0 +1,87 @@
+{
+  "university_name": "Carnegie Mellon University",
+  "location": {
+    "city": "Pittsburgh",
+    "state_province": "Pennsylvania",
+    "country": "United States"
+  },
+  "basic_info": {
+    "established_year": "1900",
+    "student_population": "Approx. 7,700 undergraduate students",
+    "acceptance_rate": "11.5%",
+    "ranking_global": "54",
+    "website": "https://www.cmu.edu",
+    "type": "private"
+  },
+  "admissions": {
+    "undergraduate": {
+      "gpa_requirement": "Competitive, typically 3.7+ weighted GPA",
+      "sat_range": "Test-optional; recommended scores 1460-1560 for submitted SAT",
+      "act_range": "Test-optional; recommended scores 33-35 for submitted ACT",
+      "ielts_requirement": "7.0 overall minimum",
+      "toefl_requirement": "100 overall minimum (iBT)",
+      "essays_required": "Yes, Common Application essay and Carnegie Mellon supplemental essays",
+      "letters_of_recommendation": "One to three letters required, depending on program",
+      "application_fee": "$75",
+      "supplemental_materials": "Required for some programs (e.g., portfolios for arts and design)"
+    }
+  },
+  "deadlines": {
+    "regular_decision": "2026-01-05",
+    "early_action": "Early Decision I: 2025-11-01, Early Decision II: 2025-01-03",
+    "early_decision": "2025-11-01 (Early Decision I)",
+    "scholarship_deadline": "2026-01-15",
+    "housing_application": "2026-05-01"
+  },
+  "costs": {
+    "tuition_annual_usd": "67020",
+    "room_board_annual_usd": "11250",
+    "total_cost_attendance": "90070",
+    "financial_aid_available": "Yes, need-based financial aid and scholarships available; CMU Pathway Program for low-income students",
+    "average_debt_graduation": "16500"
+  },
+  "popular_programs": [
+    "Computer Science",
+    "Engineering",
+    "Business (Tepper School of Business)",
+    "Drama",
+    "Fine Arts",
+    "Information Systems",
+    "Robotics",
+    "Artificial Intelligence",
+    "Public Policy",
+    "Machine Learning"
+  ],
+  "admission_requirements": {
+    "required_courses": [
+      "Four years of English",
+      "Four years of mathematics including calculus",
+      "Three to four years of science with labs",
+      "Three years of social studies",
+      "Foreign language recommended"
+    ],
+    "recommended_courses": [
+      "Advanced Placement (AP), IB, or honors-level courses",
+      "Additional STEM courses for engineering and computer science applicants"
+    ],
+    "extracurricular_importance": "Highly important; demonstrated leadership, creativity, and unique achievements are strongly considered"
+  },
+  "student_life": {
+    "campus_size": "140 acres",
+    "housing_guarantee": "Guaranteed for first-year students",
+    "dining_options": "Multiple dining halls, cafes, and meal plans available",
+    "study_abroad_programs": "Available through CMU Global Opportunities"
+  },
+  "special_features": [
+    "Test-optional admissions policy with emphasis on holistic review",
+    "Strong interdisciplinary programs integrating arts and technology",
+    "Robust research and entrepreneurial ecosystem",
+    "Notable programs in computer science and drama",
+    "Pathway Program providing tuition-free education for low-income U.S. students"
+  ],
+  "contact_info": {
+    "admissions_email": "admission@cmu.edu",
+    "admissions_phone": "(412) 268-2082"
+  },
+  "last_updated": "2024-10-03"
+}
