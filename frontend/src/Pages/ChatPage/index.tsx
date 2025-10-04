@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { io, Socket } from 'socket.io-client'; // Import socket.io-client
 
 interface Message {
   id: number;
@@ -42,6 +43,7 @@ const ChatBot: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [socket, setSocket] = useState<Socket | null>(null); // State for WebSocket connection
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -51,13 +53,89 @@ const ChatBot: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+const newSocket = io('ws://localhost:3000', {
+  query: {
+    token: localStorage.getItem('token'), 
+  },
+  transports: ['websocket'],
+});    console.log(`http://localhost:3000?token=${localStorage.getItem('token')}`);
+    newSocket.on('connected', (data) => {
+      console.log('Connected:', data);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          text: data.message,
+          sender: 'bot',
+          timestamp: new Date(),
+        },
+      ]);
+    });
+
+    // Handle chat updates
+    newSocket.on('chat_update', (data) => {
+      console.log('Chat update:', data);
+      setIsTyping(true);
+    });
+
+    // Handle chat responses
+    newSocket.on('chat_response', (data) => {
+      console.log('Chat response:', data);
+      setIsTyping(false);
+      if (data.status === 'success') {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: prev.length + 1,
+            text: data.message,
+            sender: 'bot',
+            timestamp: new Date(),
+          },
+        ]);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: prev.length + 1,
+            text: `Error: ${data.message}`,
+            sender: 'bot',
+            timestamp: new Date(),
+          },
+        ]);
+      }
+    });
+
+    // Handle errors
+    newSocket.on('error', (error) => {
+      console.error('WebSocket error:', error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          text: 'WebSocket error occurred.',
+          sender: 'bot',
+          timestamp: new Date(),
+        },
+      ]);
+    });
+
+    // Set the socket instance
+    setSocket(newSocket);
+
+    // Cleanup on component unmount
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
   const handleSendMessage = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || !socket) return;
 
     const newMessage: Message = {
       id: messages.length + 1,
@@ -66,26 +144,14 @@ const ChatBot: React.FC = () => {
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
     setInputText('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      const botResponse: Message = {
-        id: messages.length + 2,
-        text: getBotResponse(inputText),
-        sender: 'bot',
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, botResponse]);
-      setIsTyping(false);
-    }, 1500);
+    // Emit the chat message to the WebSocket server
+    socket.emit('chat', { message: inputText });
   };
 
-  const getBotResponse = (userInput: string): string => {
-    const input = userInput.toLowerCase();
-    return "WAIT UNTIL THE LAZY DEV FINISHES THE MODEL";
-  };
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -102,20 +168,22 @@ const ChatBot: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ 
-      height: '100vh', 
-      display: 'flex', 
-      flexDirection: 'column',
-      bgcolor: '#000000',
-      color: 'white'
-    }}>
+    <Box
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: '#000000',
+        color: 'white',
+      }}
+    >
       {/* Header */}
-      <AppBar 
-        position="static" 
-        sx={{ 
+      <AppBar
+        position="static"
+        sx={{
           bgcolor: '#1a1a1a',
           borderBottom: '1px solid #333',
-          boxShadow: 'none'
+          boxShadow: 'none',
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -134,7 +202,7 @@ const ChatBot: React.FC = () => {
               onClick={handleLogout}
               sx={{
                 color: '#ff4757',
-                '&:hover': { bgcolor: 'rgba(255, 71, 87, 0.1)' }
+                '&:hover': { bgcolor: 'rgba(255, 71, 87, 0.1)' },
               }}
             >
               Logout
@@ -159,7 +227,7 @@ const ChatBot: React.FC = () => {
                 bgcolor: '#333',
                 color: 'white',
                 '&:hover': { bgcolor: '#444' },
-                border: '1px solid #555'
+                border: '1px solid #555',
               }}
             />
           ))}
@@ -167,21 +235,24 @@ const ChatBot: React.FC = () => {
       </Box>
 
       {/* Messages Container */}
-      <Box sx={{ 
-        flex: 1, 
-        overflow: 'auto', 
-        p: 2,
-        bgcolor: '#111111'
-      }}>
+      <Box
+        sx={{
+          flex: 1,
+          overflow: 'auto',
+          p: 2,
+          bgcolor: '#111111',
+        }}
+      >
         {messages.map((message) => (
           <Fade in={true} key={message.id}>
             <Box
               sx={{
                 display: 'flex',
-                justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
+                justifyContent:
+                  message.sender === 'user' ? 'flex-end' : 'flex-start',
                 mb: 3,
                 alignItems: 'flex-start',
-                gap: 1
+                gap: 1,
               }}
             >
               {message.sender === 'bot' && (
@@ -189,33 +260,39 @@ const ChatBot: React.FC = () => {
                   <BotIcon sx={{ fontSize: 18 }} />
                 </Avatar>
               )}
-              
+
               <Paper
                 elevation={0}
                 sx={{
                   p: 2,
                   maxWidth: '70%',
-                  bgcolor: message.sender === 'user' ? '#00bcd4' : '#2a2a2a',
+                  bgcolor:
+                    message.sender === 'user' ? '#00bcd4' : '#2a2a2a',
                   color: message.sender === 'user' ? '#000' : '#fff',
-                  borderRadius: message.sender === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                  border: `1px solid ${message.sender === 'user' ? '#00bcd4' : '#444'}`
+                  borderRadius:
+                    message.sender === 'user'
+                      ? '18px 18px 4px 18px'
+                      : '18px 18px 18px 4px',
+                  border: `1px solid ${
+                    message.sender === 'user' ? '#00bcd4' : '#444'
+                  }`,
                 }}
               >
                 <Typography variant="body1" sx={{ lineHeight: 1.5 }}>
                   {message.text}
                 </Typography>
-                <Typography 
-                  variant="caption" 
-                  sx={{ 
-                    display: 'block', 
-                    mt: 1, 
+                <Typography
+                  variant="caption"
+                  sx={{
+                    display: 'block',
+                    mt: 1,
                     opacity: 0.7,
-                    fontSize: '0.7rem'
+                    fontSize: '0.7rem',
                   }}
                 >
-                  {message.timestamp.toLocaleTimeString([], { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
+                  {message.timestamp.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
                   })}
                 </Typography>
               </Paper>
@@ -242,7 +319,7 @@ const ChatBot: React.FC = () => {
                   p: 2,
                   bgcolor: '#2a2a2a',
                   border: '1px solid #444',
-                  borderRadius: '18px 18px 18px 4px'
+                  borderRadius: '18px 18px 18px 4px',
                 }}
               >
                 <Box sx={{ display: 'flex', gap: 0.5 }}>
@@ -258,8 +335,8 @@ const ChatBot: React.FC = () => {
                         animationDelay: `${dot * 0.16}s`,
                         '@keyframes bounce': {
                           '0%, 80%, 100%': { transform: 'scale(0)' },
-                          '40%': { transform: 'scale(1)' }
-                        }
+                          '40%': { transform: 'scale(1)' },
+                        },
                       }}
                     />
                   ))}
@@ -268,17 +345,17 @@ const ChatBot: React.FC = () => {
             </Box>
           </Fade>
         )}
-        
+
         <div ref={messagesEndRef} />
       </Box>
 
       {/* Input Area */}
-      <Paper 
+      <Paper
         elevation={0}
-        sx={{ 
-          p: 2, 
+        sx={{
+          p: 2,
           bgcolor: '#1a1a1a',
-          borderTop: '1px solid #333'
+          borderTop: '1px solid #333',
         }}
       >
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
@@ -302,8 +379,8 @@ const ChatBot: React.FC = () => {
               },
               '& .MuiInputBase-input::placeholder': {
                 color: '#aaa',
-                opacity: 1
-              }
+                opacity: 1,
+              },
             }}
           />
           <IconButton
@@ -315,7 +392,7 @@ const ChatBot: React.FC = () => {
               width: 48,
               height: 48,
               '&:hover': { bgcolor: '#00acc1' },
-              '&:disabled': { bgcolor: '#333', color: '#666' }
+              '&:disabled': { bgcolor: '#333', color: '#666' },
             }}
           >
             <SendIcon />
