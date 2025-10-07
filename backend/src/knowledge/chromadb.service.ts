@@ -6,7 +6,8 @@ export class ChromadbService {
   private client: ChromaClient;
 
   constructor() {
-    this.client = new ChromaClient();
+    this.client = new ChromaClient({
+      path:process.env.CHROMA_DB_URL || 'http://localhost:8000'});
   }
 
   async getOrCreateCollection(name: string) {
@@ -17,12 +18,12 @@ export class ChromadbService {
   }
 
   // Add documents to collection
-  async addDocuments(collectionName: string, data: {
+  async addDocuments( data: {
     ids: string[],
     embeddings: number[][],
     documents: string[],
     metadatas: any
-  }) {
+  },collectionName:string = "university_knowledge" ) {
     const collection = await this.getOrCreateCollection(collectionName);
     
     await collection.add({
@@ -34,7 +35,7 @@ export class ChromadbService {
   }
 
   // Query/search the collection
-  async queryCollection(collectionName: string, queryEmbedding: number[], nResults: number = 5) {
+  async queryCollection(queryEmbedding: number[], nResults: number = 5, collectionName:string = "university_knowledge") {
     const collection = await this.getOrCreateCollection(collectionName);
     
     return await collection.query({

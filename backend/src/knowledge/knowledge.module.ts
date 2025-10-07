@@ -5,6 +5,6 @@ import { ChromadbService } from './chromadb.service';
 import { GeminiService } from './gemini.service';
 
 @Module({
-  providers: [KnowledgeService, EmbeddingService, ChromadbService, GeminiService]
+  providers: [KnowledgeService, EmbeddingService, ChromadbService, GeminiService],
 })
 export class KnowledgeModule {}

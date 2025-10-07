@@ -16,7 +16,7 @@ export class EmbeddingService implements OnModuleInit {
 
     this.genAI = new GoogleGenerativeAI(apiKey);
     this.model = this.genAI.getGenerativeModel({ 
-      model: 'embedding-001' // or 'text-embedding-004' for newer model
+      model: 'embedding-004' // or 'text-embedding-004' for newer model
     });
     
     this.logger.log('Google Gemini Embedding Service initialized');
