@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { KnowledgeService } from 'src/knowledge/knowledge.service';
 
 @Injectable()
 export class ChatService {
+  constructor(private readonly knowledgeService: KnowledgeService) {}
   create(createChatDto: CreateChatDto) {
     return 'This action adds a new chat';
   }

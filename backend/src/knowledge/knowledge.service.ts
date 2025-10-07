@@ -1,8 +1,10 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ChromadbService } from './chromadb.service';
 import { EmbeddingService } from './embedding.service';
+import path from 'path';
 
 export interface DocumentInput {
+  university_name: string;
   content: string;
   metadata?: Record<string, any>;
 }
@@ -17,8 +19,12 @@ export class KnowledgeService implements OnModuleInit {
   ) {}
  async onModuleInit() {
     // Run only in development or if a flag is set
-    if (process.env.NODE_ENV === 'development') {
-      await this.setUniversitiesData('/path/to/your/folder');
+    //check if the .env variable NODE_ENV is set to development
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Development mode: Initializing university data...");
+        //path to the folder containing university json files
+        console.log(__dirname);
+        await this.setUniversitiesData(path.join(__dirname, '../../data'));
     }
   }
   // Add documents to knowledge base
@@ -56,33 +62,35 @@ export class KnowledgeService implements OnModuleInit {
   }
 
 
-  async setUniversitiesData(
-    folderPath: string, 
-    collectionName: string = 'university_knowledge'
-  ): Promise<void> {
-    const fs = require('fs');
-    const path = require('path');
+async setUniversitiesData(
+  folderPath: string, 
+  collectionName: string = 'university_knowledge'
+): Promise<void> {
+  const fs = require('fs');
+  const path = require('path');
 
+  const collection = await this.chromadb.getOrCreateCollection(collectionName);
+  const existingCount = await collection.count(); 
 
-    const collection = await this.chromadb.getOrCreateCollection(collectionName);
-    const existingCount = await collection.count(); 
-
-    if (existingCount > 0) {
-      this.logger.log(`Data already exists in '${collectionName}'. Skipping indexing.`);
-      return; 
-    }
-
-    const files = fs.readdirSync(folderPath).filter(file => file.endsWith('.json')); 
-
-    for (const file of files) {
-      const filePath = path.join(folderPath, file);
-      const fileContent = fs.readFileSync(filePath, 'utf-8');
-      const universityData = JSON.parse(fileContent);
-
-      universityData.metadatas = { source: file , university: universityData.university_name || 'unknown'};
-      await this.addDocuments(universityData, collectionName);
-    }
-    this.logger.log(`Indexed data from folder: ${folderPath}`);
+  if (existingCount > 0) {
+    this.logger.log(`Data already exists in '${collectionName}'. Skipping indexing.`);
+    return; 
   }
+
+  const files = fs.readdirSync(folderPath).filter(file => file.endsWith('.json')); 
+
+  for (const file of files) {
+    const filePath = path.join(folderPath, file);
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const universityData = JSON.parse(fileContent);
+
+    // Ensure universityData is an array of DocumentInput
+    const documents: DocumentInput[] = Array.isArray(universityData) ? universityData : [universityData];
+
+
+    await this.addDocuments(documents, collectionName);
+  }
+  this.logger.log(`Indexed data from folder: ${folderPath}`);
+}
 
 }
