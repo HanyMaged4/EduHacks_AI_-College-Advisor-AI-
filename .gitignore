@@ -194,3 +194,6 @@ docker-compose.prod.yml
 *.backup
 *.bak
 *.old
+#chromaDB
+backend/chroma_data/
+chroma_data/
