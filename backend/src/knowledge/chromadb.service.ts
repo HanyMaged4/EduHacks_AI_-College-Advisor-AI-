@@ -18,7 +18,14 @@ export class ChromadbService {
       embeddingFunction: null, // Disable default embedding function since you're providing custom embeddings
     });
   }
-
+ async deleteCollection(name: string = "university_knowledge"): Promise<void> {
+    try {
+      await this.client.deleteCollection({ name });
+    } catch {
+      // Ignore errors if the collection does not exist
+      throw new Error(`Collection ${name} does not exist or could not be deleted.`);
+    }
+  }
   // Add documents to collection
   async addDocuments(
     data: {

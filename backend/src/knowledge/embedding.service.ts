@@ -1,30 +1,24 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import OpenAI from 'openai';
+import { Injectable, Logger } from '@nestjs/common';
+import { pipeline } from '@xenova/transformers';
 
 @Injectable()
-export class EmbeddingService implements OnModuleInit {
+export class EmbeddingService {
   private readonly logger = new Logger(EmbeddingService.name);
-  private openai: OpenAI;
-
-  async onModuleInit() {
-    const apiKey = process.env.OPENAI_API_KEY;
-    
-    if (!apiKey) {
-      throw new Error('OPENAI_API_KEY environment variable is required');
-    }
-
-    this.openai = new OpenAI({ apiKey });
-    
-    this.logger.log('OpenAI Embedding Service initialized');
-  }
+  private extractor: any;
 
   async generateEmbedding(text: string): Promise<number[]> {
+    if (!text || typeof text !== 'string' || text.trim() === '') {
+      throw new Error('Text cannot be null, undefined, or empty');
+    }
     try {
-      const response = await this.openai.embeddings.create({
-        model: 'text-embedding-ada-002', // Use OpenAI's embedding model
-        input: text,
-      });
-      return response.data[0].embedding;
+      // Lazy initialization: load the pipeline on first use
+      if (!this.extractor) {
+        this.logger.log('Initializing Hugging Face pipeline...');
+        this.extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+        this.logger.log('Hugging Face Embedding Service initialized successfully');
+      }
+      const output = await this.extractor(text, { pooling: 'mean', normalize: true });
+      return Array.from(output.data);
     } catch (error) {
       this.logger.error('Failed to generate embedding', error);
       throw error;
@@ -37,7 +31,7 @@ export class EmbeddingService implements OnModuleInit {
       for (const text of texts) {
         const embedding = await this.generateEmbeddingWithRetry(text);
         embeddings.push(embedding);
-        await this.delay(1000); // Add 1-second delay between requests
+        await this.delay(100); // Small delay to avoid overloading
       }
       return embeddings;
     } catch (error) {
@@ -62,7 +56,7 @@ export class EmbeddingService implements OnModuleInit {
         await this.delay(1000 * attempt);
       }
     }
-    return []; // Fallback, though it should not reach here
+    return [];
   }
 
   private delay(ms: number): Promise<void> {

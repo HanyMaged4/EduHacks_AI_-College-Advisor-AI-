@@ -6,6 +6,13 @@ import { KnowledgeService } from 'src/knowledge/knowledge.service';
 @Injectable()
 export class ChatService {
   constructor(private readonly knowledgeService: KnowledgeService) {}
+  async askQuestion(question: string) {
+    const results = await this.knowledgeService.search(question, 3);
+    return {
+      question,
+      results,
+    };
+  }
   create(createChatDto: CreateChatDto) {
     return 'This action adds a new chat';
   }
