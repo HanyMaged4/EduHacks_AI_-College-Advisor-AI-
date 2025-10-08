@@ -6,35 +6,37 @@ export class ChromadbService {
   private client: ChromaClient;
 
   constructor() {
-    this.client = new ChromaClient({
-      path: process.env.CHROMA_DB_URL || 'http://localhost:8000',
-    });
+    const pathUrl =
+      process.env.CHROMA_URL ||
+      process.env.CHROMA_DB_URL ||
+      'http://localhost:8000';
+
+    this.client = new ChromaClient({ path: pathUrl });
   }
 
   async getOrCreateCollection(name: string) {
     return await this.client.getOrCreateCollection({
       name: name,
       metadata: { description: 'University knowledge base' },
-      embeddingFunction: null, // Disable default embedding function since you're providing custom embeddings
+      embeddingFunction: null, 
     });
   }
- async deleteCollection(name: string = "university_knowledge"): Promise<void> {
+  async deleteCollection(name: string = 'university_knowledge'): Promise<void> {
     try {
       await this.client.deleteCollection({ name });
-    } catch {
-      // Ignore errors if the collection does not exist
-      throw new Error(`Collection ${name} does not exist or could not be deleted.`);
+    } catch (e) {
+      // ignore if not found
     }
   }
   // Add documents to collection
   async addDocuments(
     data: {
-      ids: string[],
-      embeddings: number[][],
-      documents: string[],
-      metadatas: any
+      ids: string[];
+      embeddings: number[][];
+      documents: string[];
+      metadatas: any;
     },
-    collectionName: string = "university_knowledge"
+    collectionName: string = 'university_knowledge'
   ) {
     const collection = await this.getOrCreateCollection(collectionName);
     await collection.add({
@@ -49,12 +51,16 @@ export class ChromadbService {
   async queryCollection(
     queryEmbedding: number[],
     limit: number = 5,
-    collectionName: string = "university_knowledge"
+    collectionName: string = 'university_knowledge',
+    opts?: { where?: any; whereDocument?: any }
   ) {
     const collection = await this.getOrCreateCollection(collectionName);
     return await collection.query({
       queryEmbeddings: [queryEmbedding],
       nResults: limit,
+      include: ['metadatas', 'documents', 'distances'],
+      ...(opts?.where ? { where: opts.where } : {}),
+      ...(opts?.whereDocument ? { whereDocument: opts.whereDocument } : {}),
     });
   }
 }

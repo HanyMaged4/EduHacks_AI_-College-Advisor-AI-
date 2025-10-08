@@ -19,28 +19,61 @@ export class KnowledgeService implements OnModuleInit {
     private embedding: EmbeddingService,
   ) {}
  async onModuleInit() {
-
+    const shouldRebuild = (process.env.REBUILD_CHROMA || '').toLowerCase() === 'true';
+    if (shouldRebuild) {
+      this.logger.log('REBUILD_CHROMA is set to true. Deleting existing collection and rebuilding...');
+      await this.chromadb.deleteCollection('university_knowledge');
+    }else{
+      this.logger.log('REBUILD_CHROMA is not set to true. Skipping rebuilding of the collection.');
+    }
     if (process.env.NODE_ENV === 'development') {
 
         await this.setUniversitiesData(path.join(__dirname, '../../data'));
     }
   }
+
+  // Ensure metadata fields are scalars as required by Chroma
+  private sanitizeMetadata(meta: Record<string, any> = {}): Record<string, string | number | boolean | null> {
+    const out: Record<string, string | number | boolean | null> = {};
+    for (const [k, v] of Object.entries(meta)) {
+      if (v === null || v === undefined) {
+        out[k] = null;
+      } else if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') {
+        out[k] = v;
+      } else if (Array.isArray(v)) {
+        // join arrays into a single string
+        out[k] = v.map((x) => (typeof x === 'string' ? x : JSON.stringify(x))).join(', ');
+      } else {
+        // stringify nested objects
+        out[k] = JSON.stringify(v);
+      }
+    }
+    return out;
+  }
+
   // Add documents to knowledge base
   async addDocuments(
-    documents: DocumentInput[], 
+    documents: DocumentInput[],
     collectionName: string = 'university_knowledge'
   ): Promise<void> {
-    const ids = documents.map((_, i) => `${collectionName}-${Date.now()}-${i}`);
-    const contents = documents.map(doc => doc.content);
+    // prepare ids, contents, embeddings
+    const now = Date.now();
+    const ids = documents.map((_, i) => `${collectionName}-${now}-${i}`);
+    const contents = documents.map((d) => d.content);
     const embeddings = await this.embedding.generateEmbeddings(contents);
-    const metadatas = documents.map(doc => doc.metadata || {});
 
-    await this.chromadb.addDocuments( {
-      ids,
-      embeddings,
-      documents: contents,
-      metadatas,
-    },collectionName);
+    // sanitize metadatas for Chroma
+    const metadatas = documents.map((doc) =>
+      this.sanitizeMetadata({
+        ...(doc.metadata || {}),
+        university_name: doc.university_name, // ensure present and scalar
+      })
+    );
+
+    await this.chromadb.addDocuments(
+      { ids, embeddings, documents: contents, metadatas },
+      collectionName
+    );
 
     this.logger.log(`Added ${documents.length} documents to '${collectionName}'`);
   }
@@ -52,10 +85,16 @@ export class KnowledgeService implements OnModuleInit {
     collectionName: string = 'university_knowledge'
   ) {
     const queryEmbedding = await this.embedding.generateEmbedding(query);
+
+    // Simple heuristic: if query contains an acronym (e.g., MIT), bias results
+    const acronymMatch = query.match(/\b[A-Z]{2,6}\b/);
+    const whereDocument = acronymMatch ? { $contains: acronymMatch[0] } : undefined;
+
     return await this.chromadb.queryCollection(
       queryEmbedding,
       limit,
       collectionName,
+      { whereDocument }
     );
   }
 
@@ -67,21 +106,29 @@ async setUniversitiesData(
   const fs = require('fs');
   const path = require('path');
 
-  const files = fs.readdirSync(folderPath).filter(file => file.endsWith('.json')); 
-  let data: DocumentInput[] = [];
+  const files = fs.readdirSync(folderPath).filter((file: string) => file.endsWith('.json'));
+  const data: DocumentInput[] = [];
+
   for (const file of files) {
     const filePath = path.join(folderPath, file);
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     const universityData = JSON.parse(fileContent);
-    const {university_name, ...content} = universityData;
+
+    const { university_name, ...rest } = universityData;
+    const acronym = (university_name?.match(/\b[A-Za-z]/g)?.join('') || '').toUpperCase();
+
     data.push({
       university_name,
-      content: `University: ${university_name}. ${JSON.stringify(content)}`, // Include name for better embeddings
-      metadata: { filePath }
+      content: `University: ${university_name}${acronym ? ` (${acronym})` : ''}. ${JSON.stringify(rest)}`,
+      metadata: {
+        filePath,
+        university_name,
+        aliases: acronym ? `${university_name}|${acronym}` : university_name, // string, not array
+      },
     });
   }
 
-  console.log(`Number of documents to index: ${data.length}`);
+  this.logger.log(`Number of documents to index: ${data.length}`);
   await this.addDocuments(data, collectionName);
   this.logger.log(`Indexed data from folder: ${folderPath}`);
 }
