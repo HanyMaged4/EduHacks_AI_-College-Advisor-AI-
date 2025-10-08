@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ChromadbService } from './chromadb.service';
 import { EmbeddingService } from './embedding.service';
 import path from 'path';
+import { stringify } from 'querystring';
 
 export interface DocumentInput {
   university_name: string;
@@ -18,12 +19,11 @@ export class KnowledgeService implements OnModuleInit {
     private embedding: EmbeddingService,
   ) {}
  async onModuleInit() {
-    // Run only in development or if a flag is set
-    //check if the .env variable NODE_ENV is set to development
-      if (process.env.NODE_ENV === 'development') {
+
+    if (process.env.NODE_ENV === 'development') {
         console.log("Development mode: Initializing university data...");
-        //path to the folder containing university json files
-        console.log(__dirname);
+
+        console.log(path.join(__dirname, '../../data'));
         await this.setUniversitiesData(path.join(__dirname, '../../data'));
     }
   }
@@ -63,7 +63,7 @@ export class KnowledgeService implements OnModuleInit {
 
 
 async setUniversitiesData(
-  folderPath: string, 
+  folderPath: string,
   collectionName: string = 'university_knowledge'
 ): Promise<void> {
   const fs = require('fs');
@@ -78,18 +78,23 @@ async setUniversitiesData(
   }
 
   const files = fs.readdirSync(folderPath).filter(file => file.endsWith('.json')); 
-
+  let data: DocumentInput[] = [];
   for (const file of files) {
     const filePath = path.join(folderPath, file);
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     const universityData = JSON.parse(fileContent);
-
-    // Ensure universityData is an array of DocumentInput
-    const documents: DocumentInput[] = Array.isArray(universityData) ? universityData : [universityData];
-
-
-    await this.addDocuments(documents, collectionName);
+    const {university_name,...content} = universityData;
+    data.push({ university_name, content, metadata: { filePath } });
   }
+  // Ensure universityData is an array of DocumentInput
+
+  console.log(`Number of documents to index: ${data.length}`);
+  //converrt content to string
+  data = data.map(doc => ({
+    ...doc,
+    content: JSON.stringify(doc.content),
+  }));
+  await this.addDocuments(data.slice(0, 3), collectionName);
   this.logger.log(`Indexed data from folder: ${folderPath}`);
 }
 

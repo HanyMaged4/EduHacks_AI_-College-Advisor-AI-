@@ -16,7 +16,7 @@ export class EmbeddingService implements OnModuleInit {
 
     this.genAI = new GoogleGenerativeAI(apiKey);
     this.model = this.genAI.getGenerativeModel({ 
-      model: 'embedding-004' // or 'text-embedding-004' for newer model
+      model: 'embedding-001' // or 'text-embedding-004' for newer model
     });
     
     this.logger.log('Google Gemini Embedding Service initialized');
@@ -34,10 +34,13 @@ export class EmbeddingService implements OnModuleInit {
 
   async generateEmbeddings(texts: string[]): Promise<number[][]> {
     try {
-      const embeddings = await Promise.all(
-        texts.map(text => this.generateEmbedding(text))
-      );
-      return embeddings;
+      const embeddings: number[][] = [];
+      for (const text of texts) {
+        const embedding = await this.generateEmbeddingWithRetry(text);
+        embeddings.push(embedding);
+        await this.delay(1000); // Add 1-second delay between requests
+    }
+   return embeddings;
     } catch (error) {
       this.logger.error('Failed to generate embeddings', error);
       throw error;
