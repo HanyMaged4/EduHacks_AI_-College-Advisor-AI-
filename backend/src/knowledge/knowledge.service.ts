@@ -3,7 +3,7 @@ import { ChromadbService } from './chromadb.service';
 import { EmbeddingService } from './embedding.service';
 import path from 'path';
 import { stringify } from 'querystring';
-import { UniversityDto } from 'dto/UniversityDto';
+import { UniversityDto } from 'src/knowledge/dto/UniversityDto';
 
 export interface DocumentInput {
   content: string;
