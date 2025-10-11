@@ -71,12 +71,13 @@ export class ChatService {
       },
     });
   }
-  async getMessages(conversationId: string) {
+  async getMessages(conversationId: string, maxTokens: number) {
     return await this.prismaService.message.findMany({
       where: {
         conversationId: conversationId,
       },
       orderBy: { createdAt: 'asc' },
+      take: maxTokens,
     });
   }
 }

@@ -16,6 +16,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { WsJwtAuthGuard } from '../auth/Guards/ws-jwt-auth.guard';
 import { WsGetUser } from '../auth/Decorators/ws-get-user.decorator';
 import { GeminiService } from 'src/knowledge/gemini.service';
+import { ChatService } from './chat.service';
+import { CreateMessageDto } from './dto/create-message.dto';
 
 @WebSocketGateway({
   cors: {
@@ -28,11 +30,12 @@ export class SecureWebSocketGateway
 {
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('SecureWebSocketGateway');
-
+  private userMessageCounts: Map<number, string[]> = new Map(); // Track message counts per user
   constructor(
     private jwtService: JwtService,
     private prisma: PrismaService,
     private readonly geminiService: GeminiService, 
+    private readonly chatservice: ChatService
   ) {}
 
   afterInit(server: Server) {
@@ -93,33 +96,109 @@ export class SecureWebSocketGateway
     }
   }
 
+  @UseGuards(WsJwtAuthGuard)
+  @SubscribeMessage('load_messages')
+  async handleLoadMessages(
+    @MessageBody() data: { conversationId: string; limit?: number },
+    @WsGetUser() user: any,
+    @ConnectedSocket() client: Socket,
+  ) {
+    if (!data?.conversationId) {
+      throw new WsException('conversationId is required');
+    }
+
+    const conv = await this.prisma.conversation.findFirst({
+      where: { id: data.conversationId, userId: user.id },
+      select: { id: true },
+    });
+    if (!conv) {
+      throw new WsException('Conversation not found');
+    }
+
+    const limit = Math.min(Math.max(data.limit ?? 50, 1), 200);
+    const messages = await this.chatservice.getMessages(data.conversationId, limit);
+
+    client.emit('chat_history', {
+      conversationId: data.conversationId,
+      messages, 
+    });
+  }
+
   //chat message handler
   @UseGuards(WsJwtAuthGuard)
   @SubscribeMessage('chat')
-async handleMessagesRequest(
-  @MessageBody() data: { message: any },
-  @WsGetUser() user: any,
-) {
-  this.logger.log(`Chat message from ${user.username}: ${data.message}`);
-  // Send processing update first
-  this.server.to(`user_${user.id}`).emit('chat_update', {
-    status: 'processing',
-    message: 'Analyzing your message...',
-  });
-  try {
-    const response = await this.geminiService.generateResponse(data.message);
-    this.server.to(`user_${user.id}`).emit('chat_response', {
-      status: 'success',
-      message: response,
+  async handleMessagesRequest(
+    @MessageBody() data: { message: CreateMessageDto },
+    @WsGetUser() user: any,
+  ) {
+    if (!data?.message?.conversationId || !data?.message?.content) {
+      throw new WsException('conversationId and content are required');
+    }
+
+    // Verify conversation ownership
+    const conv = await this.prisma.conversation.findFirst({
+      where: { id: data.message.conversationId, userId: user.id },
+      select: { id: true },
     });
-  } catch (error) {
-    this.server.to(`user_${user.id}`).emit('chat_response', {
-      status: 'error',
-      message: 'Failed to generate response.',
+    if (!conv) {
+      throw new WsException('Conversation not found');
+    }
+
+    // Persist the user message
+    await this.chatservice.addMessage(user.id, {
+      conversationId: data.message.conversationId,
+      content: data.message.content,
+      role: 'user',
     });
-    this.logger.error(`Error generating response: ${error.message}`);
+
+    // Notify client that we’re processing
+    this.server.to(`user_${user.id}`).emit('chat_update', {
+      status: 'processing',
+      message: 'Analyzing your message...',
+    });
+
+    try {
+      // Load recent history to give the LLM context
+      const recent = await this.chatservice.getMessages(
+        data.message.conversationId,
+        20, 
+      );
+
+      // Build a single prompt string for Gemini (keeps your current service API)
+      // If your GeminiService supports chat messages, switch to that instead.
+      const historyText = recent
+        .map((m: any) => `${m.role}: ${m.content}`)
+        .join('\n');
+
+      const compositePrompt =
+        `You are an AI College Advisor. Use the conversation context to respond helpfully.\n` +
+        `Conversation:\n${historyText}\n` +
+        `user: ${data.message.content}\nassistant:`;
+
+      const response = await this.geminiService.generateResponse(compositePrompt);
+
+      // Persist the assistant message
+      await this.chatservice.addMessage(user.id, {
+        conversationId: data.message.conversationId,
+        content: response,
+        role: 'assistant',
+      });
+
+      // Send back to the user
+      this.server.to(`user_${user.id}`).emit('chat_response', {
+        status: 'success',
+        message: response,
+        conversationId: data.message.conversationId,
+      });
+    } catch (error) {
+      this.server.to(`user_${user.id}`).emit('chat_response', {
+        status: 'error',
+        message: 'Failed to generate response.',
+        conversationId: data.message.conversationId,
+      });
+      this.logger.error(`Error generating response: ${error.message}`);
+    }
   }
-}
 
 
   @UseGuards(WsJwtAuthGuard)
