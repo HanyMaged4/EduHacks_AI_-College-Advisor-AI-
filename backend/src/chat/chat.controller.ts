@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException 
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { GetUser } from 'src/auth/Decorators/GetSomething';
+import { CreateMessageDto } from './dto/create-message.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -16,27 +18,31 @@ export class ChatController {
   }
 
   @Post()
-  create(@Body() createChatDto: CreateChatDto) {
-    return this.chatService.create(createChatDto);
+  async create(@GetUser('id') userId: number) {
+    return await this.chatService.create(userId);
   }
 
   @Get()
-  findAll() {
-    return this.chatService.findAll();
+  async findAll(@GetUser('id') userId: number) {
+    return await this.chatService.findAll(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.chatService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
-    return this.chatService.update(+id, updateChatDto);
+  async findOne(@GetUser('id') userId: number, @Param('id') id: string) {
+    return await this.chatService.findOne(userId,+id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.chatService.remove(+id);
+  async remove(@GetUser('id') userId: number, @Param('id') id: string) {
+    return await this.chatService.remove(userId, +id);
+  }
+
+  @Post(':id/message')
+  async addMessage(@GetUser('id') userId: number, @Param('id') id: string, @Body() body: CreateMessageDto) {
+    if (!body.content || body.content.trim() === '') {
+      throw new BadRequestException('Message content cannot be empty');
+    }
+    body.conversationId = id;
+    return await this.chatService.addMessage(userId, body);
   }
 }
