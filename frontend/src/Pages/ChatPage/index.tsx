@@ -27,12 +27,14 @@ import {
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client'; // Import socket.io-client
+import { createConversation, listConversations } from '../../APIs/chat';
 
 interface Message {
-  id: number;
-  text: string;
-  sender: 'user' | 'bot';
-  timestamp: Date;
+  id?: string | number;
+  content: string;
+  role: 'user' | 'assistant' | 'system';
+  conversationId: string;
+  createdAt?: string | Date;
 }
 
 interface ChatSession {
@@ -60,59 +62,35 @@ const ChatBot: React.FC = () => {
     scrollToBottom();
   }, [activeChatId, chats]);
 
-  const storageKey = (userId?: string | number) => `college_ai_chats_user_${userId ?? 'guest'}`;
-
-  const createGreetingMessage = (): Message => ({
-    id: 1,
-    text: "Hello! I'm your AI College Advisor. I'm here to help you with college selection, applications, and career guidance. What would you like to know?",
-    sender: 'bot',
-    timestamp: new Date(),
-  });
-
-  const createNewChatSession = (title?: string): ChatSession => ({
-    id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  const createNewChatSession = (id: string, createdAt: string, title?: string): ChatSession => ({
+    id,
     title: title || 'New chat',
-    createdAt: Date.now(),
-    messages: [createGreetingMessage()],
+    createdAt: new Date(createdAt).getTime(),
+    messages: [],
   });
 
-  // Load chats from localStorage when user is known
   useEffect(() => {
-    const key = storageKey(user?.id as any);
-    try {
-      const raw = localStorage.getItem(key);
-      if (raw) {
-        const parsed = JSON.parse(raw) as ChatSession[];
-
-        const revived = parsed.map((c) => ({
-          ...c,
-          messages: c.messages.map((m) => ({ ...m, timestamp: new Date(m.timestamp) } as Message)),
-        }));
-        setChats(revived);
-        setActiveChatId(revived[0]?.id || '');
-      } else {
-        const first = createNewChatSession('New chat');
-        setChats([first]);
-        setActiveChatId(first.id);
+    let mounted = true;
+    const run = async () => {
+      try {
+        const convs = await listConversations();
+        if (!mounted) return;
+        const sessions: ChatSession[] = convs.map((c: any) =>
+          createNewChatSession(c.id, c.createdAt, 'New chat')
+        );
+        setChats(sessions);
+        if (sessions.length) setActiveChatId(sessions[0].id);
+      } catch (err) {
+        console.error('Failed to load conversations', err);
       }
-    } catch (e) {
-      const first = createNewChatSession('New chat');
-      setChats([first]);
-      setActiveChatId(first.id);
-    }
-
+    };
+    if (user?.id) run();
+    return () => {
+      mounted = false;
+    };
   }, [user?.id]);
 
 
-  useEffect(() => {
-    if (!chats.length) return;
-    const key = storageKey(user?.id as any);
-    const toStore = chats.map((c) => ({
-      ...c,
-      messages: c.messages.map((m) => ({ ...m, timestamp: m.timestamp.toISOString() })),
-    }));
-    localStorage.setItem(key, JSON.stringify(toStore));
-  }, [chats, user?.id]);
 
   useEffect(() => {
     const newSocket = io('ws://localhost:3000', {
@@ -123,18 +101,25 @@ const ChatBot: React.FC = () => {
     });
     console.log(`http://localhost:3000?token=${localStorage.getItem('token')}`);
 
-    const appendBotMessage = (text: string) => {
+    const appendBotMessage = (text: string, conversationId?: string) => {
       setChats((prev) => {
         if (!prev.length) return prev;
-        const idx = prev.findIndex((c) => c.id === activeChatId) ?? 0;
+        const targetId = conversationId || activeChatId;
+        const idx = prev.findIndex((c) => c.id === targetId) ?? 0;
         const i = idx >= 0 ? idx : 0;
         const chat = prev[i];
-        const nextMsgId = (chat.messages[chat.messages.length - 1]?.id || 0) + 1;
+        const nextMsgId = (Number(chat.messages[chat.messages.length - 1]?.id) || 0) + 1;
         const updated: ChatSession = {
           ...chat,
           messages: [
             ...chat.messages,
-            { id: nextMsgId, text, sender: 'bot', timestamp: new Date() },
+            {
+              id: nextMsgId,
+              content: text,
+              role: 'assistant',
+              conversationId: chat.id,
+              createdAt: new Date(),
+            },
           ],
         };
         const copy = [...prev];
@@ -149,6 +134,24 @@ const ChatBot: React.FC = () => {
     });
 
 
+    newSocket.on('chat_history', (payload: { conversationId: string; messages: any[] }) => {
+      setChats((prev) => {
+        const i = prev.findIndex((c) => c.id === payload.conversationId);
+        if (i === -1) return prev;
+        const msgs: Message[] = (payload.messages || []).map((m, idx) => ({
+          id: m.id ?? idx + 1,
+          content: m.content,
+          role: m.role,
+          conversationId: payload.conversationId,
+          createdAt: m.createdAt,
+        }));
+        const updated = { ...prev[i], messages: msgs } as ChatSession;
+        const copy = [...prev];
+        copy[i] = updated;
+        return copy;
+      });
+    });
+
     newSocket.on('chat_update', (data) => {
       console.log('Chat update:', data);
       setIsTyping(true);
@@ -159,9 +162,10 @@ const ChatBot: React.FC = () => {
       console.log('Chat response:', data);
       setIsTyping(false);
       if (data.status === 'success') {
-        appendBotMessage(data.message);
+
+        appendBotMessage(data.message, (data as any).conversationId);
       } else {
-        appendBotMessage(`Error: ${data.message}`);
+        appendBotMessage(`Error: ${data.message}`, (data as any).conversationId);
       }
     });
 
@@ -174,13 +178,16 @@ const ChatBot: React.FC = () => {
     // Set the socket instance
     setSocket(newSocket);
 
-    // Cleanup on component unmount
     return () => {
       newSocket.disconnect();
     };
-    // We intentionally exclude activeChatId from deps to avoid re-wiring socket listeners
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, []);
+
+  useEffect(() => {
+    if (!socket || !activeChatId) return;
+    socket.emit('load_messages', { conversationId: activeChatId, limit: 50 });
+  }, [socket, activeChatId]);
 
   const handleLogout = () => {
     logout();
@@ -196,12 +203,20 @@ const ChatBot: React.FC = () => {
       const idx = prev.findIndex((c) => c.id === activeChatId) ?? 0;
       const i = idx >= 0 ? idx : 0;
       const chat = prev[i];
-      const nextMsgId = (chat.messages[chat.messages.length - 1]?.id || 0) + 1;
+      const lastIdRaw = chat.messages[chat.messages.length - 1]?.id;
+      const lastId = typeof lastIdRaw === 'number' ? lastIdRaw : Number(lastIdRaw) || 0;
+      const nextMsgId = lastId + 1;
       const updated: ChatSession = {
         ...chat,
         messages: [
           ...chat.messages,
-          { id: nextMsgId, text: inputText, sender: 'user', timestamp: new Date() },
+          {
+            id: nextMsgId,
+            content: inputText,
+            role: 'user',
+            conversationId: chat.id,
+            createdAt: new Date(),
+          },
         ],
       };
       const copy = [...prev];
@@ -211,8 +226,9 @@ const ChatBot: React.FC = () => {
     setInputText('');
     setIsTyping(true);
 
-    // Emit the chat message to the WebSocket server
-    socket.emit('chat', { message: inputText });
+    socket.emit('chat', {
+      message: { conversationId: activeChatId, content: inputText, role: 'user' },
+    });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -232,12 +248,18 @@ const ChatBot: React.FC = () => {
 
   const activeChat = chats.find((c) => c.id === activeChatId) || chats[0];
 
-  const handleCreateNewChat = () => {
-    const newChat = createNewChatSession('New chat');
-    setChats((prev) => [newChat, ...prev]);
-    setActiveChatId(newChat.id);
-    setInputText('');
-    setIsTyping(false);
+  const handleCreateNewChat = async () => {
+    try {
+      const conv = await createConversation();
+      const newChat = createNewChatSession(conv.id, conv.createdAt, 'New chat');
+      setChats((prev) => [newChat, ...prev]);
+      setActiveChatId(newChat.id);
+      setInputText('');
+      setIsTyping(false);
+      socket?.emit('load_messages', { conversationId: newChat.id, limit: 50 });
+    } catch (e) {
+      console.error('Failed to create conversation', e);
+    }
   };
 
   const formatTime = (d: Date) =>
@@ -385,18 +407,18 @@ const ChatBot: React.FC = () => {
         }}
       >
         {activeChat?.messages.map((message) => (
-          <Fade in={true} key={message.id}>
+          <Fade in={true} key={String(message.id)}>
             <Box
               sx={{
                 display: 'flex',
                 justifyContent:
-                  message.sender === 'user' ? 'flex-end' : 'flex-start',
+                  message.role === 'user' ? 'flex-end' : 'flex-start',
                 mb: 3,
                 alignItems: 'flex-start',
                 gap: 1,
               }}
             >
-              {message.sender === 'bot' && (
+              {message.role !== 'user' && (
                 <Avatar sx={{ bgcolor: '#00bcd4', width: 32, height: 32 }}>
                   <BotIcon sx={{ fontSize: 18 }} />
                 </Avatar>
@@ -407,20 +429,19 @@ const ChatBot: React.FC = () => {
                 sx={{
                   p: 2,
                   maxWidth: '70%',
-                  bgcolor:
-                    message.sender === 'user' ? '#00bcd4' : '#2a2a2a',
-                  color: message.sender === 'user' ? '#000' : '#fff',
+                  bgcolor: message.role === 'user' ? '#00bcd4' : '#2a2a2a',
+                  color: message.role === 'user' ? '#000' : '#fff',
                   borderRadius:
-                    message.sender === 'user'
+                    message.role === 'user'
                       ? '18px 18px 4px 18px'
                       : '18px 18px 18px 4px',
                   border: `1px solid ${
-                    message.sender === 'user' ? '#00bcd4' : '#444'
+                    message.role === 'user' ? '#00bcd4' : '#444'
                   }`,
                 }}
               >
                 <Typography variant="body1" sx={{ lineHeight: 1.5 }}>
-                  {message.text}
+                  {message.content}
                 </Typography>
                 <Typography
                   variant="caption"
@@ -431,11 +452,11 @@ const ChatBot: React.FC = () => {
                     fontSize: '0.7rem',
                   }}
                 >
-                  {formatTime(message.timestamp)}
+                  {formatTime(new Date(message.createdAt || new Date()))}
                 </Typography>
               </Paper>
 
-              {message.sender === 'user' && (
+              {message.role === 'user' && (
                 <Avatar sx={{ bgcolor: '#666', width: 32, height: 32 }}>
                   <PersonIcon sx={{ fontSize: 18 }} />
                 </Avatar>

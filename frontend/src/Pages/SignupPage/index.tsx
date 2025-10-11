@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { PersonAddOutlined, Google, GitHub } from '@mui/icons-material';
 import { useAuth } from '../../Context/AuthContext';
+import { signupAPI } from '../../APIs/auth';
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -56,17 +57,11 @@ const SignupPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+      const response = await signupAPI(
+        formData.username,
+        formData.email,
+        formData.password
+      );
 
       const data = await response.json();
 

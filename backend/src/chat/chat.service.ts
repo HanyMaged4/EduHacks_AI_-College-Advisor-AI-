@@ -17,19 +17,20 @@ export class ChatService {
       results,
     };
   }
-  async create(userId: number) {
+  async create(userId: string) {
     return await this.prismaService.conversation.create({
       data: {
-        userId: userId.toString(),
+        userId: userId,
       }
     });
 
   }
 
-  async findAll(userId: number) {
+  async findAll(userId: string) {
+    let stringUserId = userId;
     const conversations = await this.prismaService.conversation.findMany({
       where: {
-        userId: userId.toString(),
+        userId: stringUserId,
       },
       // include: { messages: true },
       orderBy: { createdAt: 'desc' },
@@ -37,30 +38,30 @@ export class ChatService {
     return conversations;
   }
 
-  async findOne(userId: number, id: number) {
+  async findOne(userId: string, id: string) {
     return await this.prismaService.conversation.findFirst({
       where: {
-        id: id.toString(),
-        userId: userId.toString(),
+        id: id,
+        userId: userId,
       },
       include: { messages: true },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async remove(userId: number, id: number) {
+  async remove(userId: string, id: string) {
     return await this.prismaService.conversation.deleteMany({
       where: {
-        id: id.toString(),
-        userId: userId.toString(),
+        id: id,
+        userId: userId,
       },
     });
   }
-  async addMessage(userId: number, Message: CreateMessageDto) {
+  async addMessage(userId: string, Message: CreateMessageDto) {
     const conversation = await this.prismaService.conversation.findFirst({
       where: {
         id: Message.conversationId,
-        userId: userId.toString(),
+        userId: userId,
       },
     });
     return await this.prismaService.message.create({
