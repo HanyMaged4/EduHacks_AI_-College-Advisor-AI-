@@ -6,9 +6,8 @@ import { stringify } from 'querystring';
 import { UniversityDto } from 'dto/UniversityDto';
 
 export interface DocumentInput {
-  university_name: string;
   content: string;
-  metadata?: Record<string, any>;
+  metadata: Record<string, any>;
 }
 
 @Injectable()
@@ -28,8 +27,7 @@ export class KnowledgeService implements OnModuleInit {
       this.logger.log('REBUILD_CHROMA is not set to true. Skipping rebuilding of the collection.');
     }
     if (process.env.NODE_ENV === 'development') {
-
-        await this.setUniversitiesData(path.join(__dirname, '../../data'));
+    await this.setUniversitiesData(path.resolve(process.cwd(), 'data'));
     }
   }
 
@@ -65,10 +63,7 @@ export class KnowledgeService implements OnModuleInit {
 
     // sanitize metadatas for Chroma
     const metadatas = documents.map((doc) =>
-      this.sanitizeMetadata({
-        ...(doc.metadata || {}),
-        university_name: doc.university_name, // ensure present and scalar
-      })
+      this.sanitizeMetadata(doc.metadata)
     );
 
     await this.chromadb.addDocuments(
@@ -112,21 +107,25 @@ async setUniversitiesData(
 
   for (const file of files) {
     const filePath = path.join(folderPath, file);
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
-    const universityData = JSON.parse(fileContent) as UniversityDto;
-    
-    const { university_name, ...rest } = universityData;
-    const acronym = (university_name?.match(/\b[A-Za-z]/g)?.join('') || '').toUpperCase();
-
-    data.push({
-      university_name,
-      content: `University: ${university_name}${acronym ? ` (${acronym})` : ''}. ${JSON.stringify(rest)}`,
-      metadata: {
-        filePath,
-        university_name,
-        aliases: acronym ? `${university_name}|${acronym}` : university_name, // string, not array
-      },
-    });
+    try {
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      const universityData = JSON.parse(fileContent) as UniversityDto;
+      const { summary, ...metaData } = universityData;
+      if (!summary || summary.trim().length === 0) {
+        this.logger.warn(`Skipping file with empty summary: ${filePath}`);
+        continue;
+      }
+      const acronym = (metaData.university_name?.match(/\b[A-ZaZ]/g)?.join('') || '').toUpperCase();
+      data.push({
+        content: `${summary.trim()}`,
+        metadata: {
+          ...metaData,
+          acronym,
+        },
+      });
+    } catch (err) {
+      this.logger.error(`Failed to process file ${filePath}: ${err.message}`);
+    }
   }
 
   this.logger.log(`Number of documents to index: ${data.length}`);
