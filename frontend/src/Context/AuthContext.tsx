@@ -22,6 +22,13 @@ export const useAuth = () => {
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
+  //check the jwt token expiration
+  if (context.token) {
+    const payload = JSON.parse(atob(context.token.split('.')[1]));
+    if (payload.exp * 1000 < Date.now()) {
+      context.logout();
+    }
+  }
   return context;
 };
 
