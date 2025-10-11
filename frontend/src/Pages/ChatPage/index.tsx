@@ -11,12 +11,18 @@ import {
   Button,
   Fade,
   Chip,
+  List,
+  ListItemButton,
+  ListItemText,
+  Divider,
+  Tooltip,
 } from '@mui/material';
 import {
   Send as SendIcon,
   Logout as LogoutIcon,
   SmartToy as BotIcon,
   Person as PersonIcon,
+  Add as AddIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -29,95 +35,140 @@ interface Message {
   timestamp: Date;
 }
 
+interface ChatSession {
+  id: string; // uuid-like string
+  title: string;
+  createdAt: number; // epoch ms
+  messages: Message[];
+}
+
 const ChatBot: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: "Hello! I'm your AI College Advisor. I'm here to help you with college selection, applications, and career guidance. What would you like to know?",
-      sender: 'bot',
-      timestamp: new Date(),
-    },
-  ]);
+  const [chats, setChats] = useState<ChatSession[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string>('');
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [socket, setSocket] = useState<Socket | null>(null); // State for WebSocket connection
-
+  const [socket, setSocket] = useState<Socket | null>(null); /
+  
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [activeChatId, chats]);
+
+  const storageKey = (userId?: string | number) => `college_ai_chats_user_${userId ?? 'guest'}`;
+
+  const createGreetingMessage = (): Message => ({
+    id: 1,
+    text: "Hello! I'm your AI College Advisor. I'm here to help you with college selection, applications, and career guidance. What would you like to know?",
+    sender: 'bot',
+    timestamp: new Date(),
+  });
+
+  const createNewChatSession = (title?: string): ChatSession => ({
+    id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    title: title || 'New chat',
+    createdAt: Date.now(),
+    messages: [createGreetingMessage()],
+  });
+
+  // Load chats from localStorage when user is known
+  useEffect(() => {
+    const key = storageKey(user?.id as any);
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        const parsed = JSON.parse(raw) as ChatSession[];
+
+        const revived = parsed.map((c) => ({
+          ...c,
+          messages: c.messages.map((m) => ({ ...m, timestamp: new Date(m.timestamp) } as Message)),
+        }));
+        setChats(revived);
+        setActiveChatId(revived[0]?.id || '');
+      } else {
+        const first = createNewChatSession('New chat');
+        setChats([first]);
+        setActiveChatId(first.id);
+      }
+    } catch (e) {
+      const first = createNewChatSession('New chat');
+      setChats([first]);
+      setActiveChatId(first.id);
+    }
+
+  }, [user?.id]);
+
 
   useEffect(() => {
-const newSocket = io('ws://localhost:3000', {
-  query: {
-    token: localStorage.getItem('token'), 
-  },
-  transports: ['websocket'],
-});    console.log(`http://localhost:3000?token=${localStorage.getItem('token')}`);
+    if (!chats.length) return;
+    const key = storageKey(user?.id as any);
+    const toStore = chats.map((c) => ({
+      ...c,
+      messages: c.messages.map((m) => ({ ...m, timestamp: m.timestamp.toISOString() })),
+    }));
+    localStorage.setItem(key, JSON.stringify(toStore));
+  }, [chats, user?.id]);
+
+  useEffect(() => {
+    const newSocket = io('ws://localhost:3000', {
+      query: {
+        token: localStorage.getItem('token'),
+      },
+      transports: ['websocket'],
+    });
+    console.log(`http://localhost:3000?token=${localStorage.getItem('token')}`);
+
+    const appendBotMessage = (text: string) => {
+      setChats((prev) => {
+        if (!prev.length) return prev;
+        const idx = prev.findIndex((c) => c.id === activeChatId) ?? 0;
+        const i = idx >= 0 ? idx : 0;
+        const chat = prev[i];
+        const nextMsgId = (chat.messages[chat.messages.length - 1]?.id || 0) + 1;
+        const updated: ChatSession = {
+          ...chat,
+          messages: [
+            ...chat.messages,
+            { id: nextMsgId, text, sender: 'bot', timestamp: new Date() },
+          ],
+        };
+        const copy = [...prev];
+        copy[i] = updated;
+        return copy;
+      });
+    };
+
     newSocket.on('connected', (data) => {
       console.log('Connected:', data);
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: prev.length + 1,
-          text: data.message,
-          sender: 'bot',
-          timestamp: new Date(),
-        },
-      ]);
+      appendBotMessage(data.message);
     });
 
-    // Handle chat updates
+
     newSocket.on('chat_update', (data) => {
       console.log('Chat update:', data);
       setIsTyping(true);
     });
 
-    // Handle chat responses
+
     newSocket.on('chat_response', (data) => {
       console.log('Chat response:', data);
       setIsTyping(false);
       if (data.status === 'success') {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: prev.length + 1,
-            text: data.message,
-            sender: 'bot',
-            timestamp: new Date(),
-          },
-        ]);
+        appendBotMessage(data.message);
       } else {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: prev.length + 1,
-            text: `Error: ${data.message}`,
-            sender: 'bot',
-            timestamp: new Date(),
-          },
-        ]);
+        appendBotMessage(`Error: ${data.message}`);
       }
     });
 
-    // Handle errors
+
     newSocket.on('error', (error) => {
       console.error('WebSocket error:', error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: prev.length + 1,
-          text: 'WebSocket error occurred.',
-          sender: 'bot',
-          timestamp: new Date(),
-        },
-      ]);
+      appendBotMessage('WebSocket error occurred.');
     });
 
     // Set the socket instance
@@ -127,6 +178,8 @@ const newSocket = io('ws://localhost:3000', {
     return () => {
       newSocket.disconnect();
     };
+    // We intentionally exclude activeChatId from deps to avoid re-wiring socket listeners
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLogout = () => {
@@ -137,14 +190,24 @@ const newSocket = io('ws://localhost:3000', {
   const handleSendMessage = async () => {
     if (!inputText.trim() || !socket) return;
 
-    const newMessage: Message = {
-      id: messages.length + 1,
-      text: inputText,
-      sender: 'user',
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
+    // Append to active chat
+    setChats((prev) => {
+      if (!prev.length) return prev;
+      const idx = prev.findIndex((c) => c.id === activeChatId) ?? 0;
+      const i = idx >= 0 ? idx : 0;
+      const chat = prev[i];
+      const nextMsgId = (chat.messages[chat.messages.length - 1]?.id || 0) + 1;
+      const updated: ChatSession = {
+        ...chat,
+        messages: [
+          ...chat.messages,
+          { id: nextMsgId, text: inputText, sender: 'user', timestamp: new Date() },
+        ],
+      };
+      const copy = [...prev];
+      copy[i] = updated;
+      return copy;
+    });
     setInputText('');
     setIsTyping(true);
 
@@ -167,16 +230,94 @@ const newSocket = io('ws://localhost:3000', {
     'Major selection help',
   ];
 
+  const activeChat = chats.find((c) => c.id === activeChatId) || chats[0];
+
+  const handleCreateNewChat = () => {
+    const newChat = createNewChatSession('New chat');
+    setChats((prev) => [newChat, ...prev]);
+    setActiveChatId(newChat.id);
+    setInputText('');
+    setIsTyping(false);
+  };
+
+  const formatTime = (d: Date) =>
+    d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
   return (
     <Box
       sx={{
         height: '100vh',
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
         bgcolor: '#000000',
         color: 'white',
       }}
     >
+      {/* Sidebar */}
+      <Box
+        sx={{
+          width: 280,
+          borderRight: '1px solid #333',
+          bgcolor: '#0d0d0d',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <AppBar position="static" sx={{ bgcolor: '#121212', boxShadow: 'none' }}>
+          <Toolbar sx={{ justifyContent: 'space-between' }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              Chats
+            </Typography>
+            <Tooltip title="Create new chat">
+              <IconButton onClick={handleCreateNewChat} size="small" sx={{ color: '#00bcd4' }}>
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
+        </AppBar>
+
+        <Box sx={{ flex: 1, overflow: 'auto' }}>
+          <List dense>
+            {chats.map((c) => (
+              <ListItemButton
+                key={c.id}
+                selected={c.id === activeChatId}
+                onClick={() => setActiveChatId(c.id)}
+                sx={{
+                  '&.Mui-selected': { bgcolor: '#1c1c1c' },
+                  '&:hover': { bgcolor: '#1a1a1a' },
+                }}
+              >
+                <ListItemText
+                  primary={c.title}
+                  secondary={new Date(c.createdAt).toLocaleDateString()}
+                  primaryTypographyProps={{ noWrap: true }}
+                  secondaryTypographyProps={{ color: '#888' }}
+                />
+              </ListItemButton>
+            ))}
+          </List>
+        </Box>
+        <Divider sx={{ borderColor: '#333' }} />
+        <Box sx={{ p: 1 }}>
+          <Button
+            fullWidth
+            startIcon={<AddIcon />}
+            onClick={handleCreateNewChat}
+            sx={{
+              color: '#00bcd4',
+              border: '1px solid #00bcd4',
+              textTransform: 'none',
+              '&:hover': { bgcolor: 'rgba(0,188,212,0.1)' },
+            }}
+          >
+            New chat
+          </Button>
+        </Box>
+      </Box>
+
+      {/* Main content */}
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <AppBar
         position="static"
@@ -243,7 +384,7 @@ const newSocket = io('ws://localhost:3000', {
           bgcolor: '#111111',
         }}
       >
-        {messages.map((message) => (
+        {activeChat?.messages.map((message) => (
           <Fade in={true} key={message.id}>
             <Box
               sx={{
@@ -290,10 +431,7 @@ const newSocket = io('ws://localhost:3000', {
                     fontSize: '0.7rem',
                   }}
                 >
-                  {message.timestamp.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  {formatTime(message.timestamp)}
                 </Typography>
               </Paper>
 
@@ -399,6 +537,7 @@ const newSocket = io('ws://localhost:3000', {
           </IconButton>
         </Box>
       </Paper>
+      </Box>
     </Box>
   );
 };
