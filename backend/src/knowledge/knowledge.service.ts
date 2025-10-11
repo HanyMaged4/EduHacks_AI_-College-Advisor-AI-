@@ -3,6 +3,7 @@ import { ChromadbService } from './chromadb.service';
 import { EmbeddingService } from './embedding.service';
 import path from 'path';
 import { stringify } from 'querystring';
+import { UniversityDto } from 'dto/UniversityDto';
 
 export interface DocumentInput {
   university_name: string;
@@ -112,8 +113,8 @@ async setUniversitiesData(
   for (const file of files) {
     const filePath = path.join(folderPath, file);
     const fileContent = fs.readFileSync(filePath, 'utf-8');
-    const universityData = JSON.parse(fileContent);
-
+    const universityData = JSON.parse(fileContent) as UniversityDto;
+    
     const { university_name, ...rest } = universityData;
     const acronym = (university_name?.match(/\b[A-Za-z]/g)?.join('') || '').toUpperCase();
 
