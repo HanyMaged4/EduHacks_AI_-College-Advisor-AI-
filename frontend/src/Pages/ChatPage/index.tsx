@@ -28,6 +28,9 @@ import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client'; // Import socket.io-client
 import { createConversation, listConversations } from '../../APIs/chat';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 interface Message {
   id?: string | number;
@@ -441,7 +444,18 @@ const ChatBot: React.FC = () => {
                 }}
               >
                 <Typography variant="body1" sx={{ lineHeight: 1.5 }}>
-                  {message.content}
+                  {message.role === 'user' ? (
+                    <>{message.content}</>
+                  ) : (
+                    <div>
+          <ReactMarkdown
+        rehypePlugins={[rehypeRaw]}
+        remarkPlugins={[remarkGfm]}
+      >
+        {message.content}
+      </ReactMarkdown>
+    </div>
+                  )}
                 </Typography>
                 <Typography
                   variant="caption"
