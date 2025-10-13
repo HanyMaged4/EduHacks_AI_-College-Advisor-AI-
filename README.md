@@ -7,11 +7,9 @@ An intelligent college advisory platform powered by AI that helps students find 
 - **AI-Powered University Search**: Natural language queries to find universities matching your criteria
 - **Semantic Search**: Advanced vector-based search using ChromaDB for accurate results
 - **Real-time Chat**: Interactive chat interface with streaming responses
-- **User Authentication**: Secure JWT-based authentication system
 - **Comprehensive University Data**: Information on top universities worldwide including MIT, Stanford, Harvard, and more
 
 ## 🏗️ Architecture
-
 ### Backend (NestJS)
 - **Knowledge Service**: Manages university data and embeddings in ChromaDB
 - **Gemini AI Integration**: Uses Google's Gemini AI for query parsing and response generation
@@ -256,7 +254,13 @@ This project is licensed under the UNLICENSED license.
 - ChromaDB for vector database capabilities
 - The open-source community for amazing tools and libraries
 
-## 📧 Contact
+## 🔮 Future plans
+
+- Implement Retrieval-Augmented Generation (RAG) for enhanced university retrieval: better retrieval pipelines and refined filtering will be added in a later release. This will allow the system to combine semantic search results from ChromaDB with generative summarization to produce more accurate, source-backed responses.
+
+*Note: RAG/retrieval and authentication features are planned but not included in the current release.*
+
+## � Contact
 
 For questions or support, please open an issue on GitHub.
 
