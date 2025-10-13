@@ -4,6 +4,7 @@ import { EmbeddingService } from './embedding.service';
 import path from 'path';
 import { stringify } from 'querystring';
 import { UniversityDto } from 'src/knowledge/dto/UniversityDto';
+import { GeminiService } from './gemini.service';
 
 export interface DocumentInput {
   content: string;
@@ -17,6 +18,7 @@ export class KnowledgeService implements OnModuleInit {
   constructor(
     private chromadb: ChromadbService,
     private embedding: EmbeddingService,
+    private readonly geminiService: GeminiService
   ) {}
  async onModuleInit() {
     const shouldRebuild = (process.env.REBUILD_CHROMA || '').toLowerCase() === 'true';
@@ -74,27 +76,22 @@ export class KnowledgeService implements OnModuleInit {
     this.logger.log(`Added ${documents.length} documents to '${collectionName}'`);
   }
 
-  // Search knowledge base
-  async search(
-    query: string,
-    limit: number = 5,
-    collectionName: string = 'university_knowledge'
-  ) {
-    const queryEmbedding = await this.embedding.generateEmbedding(query);
-
-    // Simple heuristic: if query contains an acronym (e.g., MIT), bias results
-    const acronymMatch = query.match(/\b[A-Z]{2,6}\b/);
-    const whereDocument = acronymMatch ? { $contains: acronymMatch[0] } : undefined;
-
-    return await this.chromadb.queryCollection(
-      queryEmbedding,
-      limit,
-      collectionName,
-      { whereDocument }
-    );
-  }
-
-
+async search(
+  query: string,
+  limit: number = 5,
+  collectionName: string = 'university_knowledge',
+  filters?: object,
+  documentFilters?: object 
+) {
+  const queryEmbedding = await this.embedding.generateEmbedding(query);
+  return await this.chromadb.queryCollection(
+    queryEmbedding,
+    limit,
+    collectionName,
+    // No need to spread here, just pass the objects
+    { where: filters, whereDocument: documentFilters }
+  );
+}
 async setUniversitiesData(
   folderPath: string,
   collectionName: string = 'university_knowledge'
@@ -131,6 +128,70 @@ async setUniversitiesData(
   this.logger.log(`Number of documents to index: ${data.length}`);
   await this.addDocuments(data, collectionName);
   this.logger.log(`Indexed data from folder: ${folderPath}`);
+  }
+
+ extractJsonFromMarkdown(response: string): string | null {
+  const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/);
+  if (jsonMatch && jsonMatch[1]) {
+    return jsonMatch[1];
+  }
+  return null;
+}
+
+private transformFiltersForChroma(filters: Record<string, any>): Record<string, any> {
+  if (!filters || typeof filters !== 'object') return {};
+  const out: Record<string, any> = {};
+  for (const [key, value] of Object.entries(filters)) {
+    // If value is already an operator object, keep as is
+    if (typeof value === 'object' && value !== null && Object.keys(value)[0]?.startsWith('$')) {
+      out[key] = value;
+    } else {
+      out[key] = { "$eq": value };
+    }
+  }
+  return out;
+}
+
+  async askAQuestion(
+  question: string,
+  limit: number = 5,
+  collectionName: string = 'university_knowledge'
+) {
+const templatedQuestion = `
+  You are a university query parser. Extract the \`semantic_query\`, \`metadata_filters\`, and \`document_filters\` from the user's question, strictly following the provided JSON schema. For metadata, use nested keys like \`basic_info.acceptance_rate\` and use comparatives like \`$lt\` or \`$gt\`. The value for \`admissions.undergraduate\` should be a boolean. For \`document_filters\`, use the \`$contains\` operator to identify keywords or phrases within the document content.
+<DTO_SCHEMA>
+{"summary":"string","university_name":"string","location":{"city":"string","state_province":"string","country":"string"},"basic_info":{"established_year":"string","student_population":"string","acceptance_rate":"string","ranking_global":"string","website":"string","type":"string"},"admissions":{"undergraduate":{"gpa_requirement":"string","sat_range":"string","act_range":"string","ielts_requirement":"string","toefl_requirement":"string","essays_required":"string","letters_of_recommendation":"string","application_fee":"string","supplemental_materials":"string"}},"popular_programs":"string[]"}
+</DTO_SCHEMA>
+
+User query: "Show me universities in Boston with a strong Computer Science program and a low acceptance rate."
+
+JSON Output:
+
+  `;
+  const llmResponse = await this.geminiService.generateResponse(templatedQuestion);
+  const jsonString = this.extractJsonFromMarkdown(llmResponse);
+  
+  if (!jsonString) {
+    console.error("LLM did not return a valid JSON object. Falling back.");
+    return await this.search(question, limit, collectionName);
+  }
+
+  let parsedResponse;
+  try {
+    parsedResponse = JSON.parse(jsonString);
+  } catch (e) {
+    console.error("Failed to parse LLM's JSON response:", e);
+    return await this.search(question, limit, collectionName);
+  }
+  
+  const semanticQuery = parsedResponse.semantic_query;
+  const metadataFilters = parsedResponse.metadata_filters;
+  const documentFilters = parsedResponse.document_filters;
+
+  const chromaMetadataFilters = this.transformFiltersForChroma(metadataFilters);
+  const chromaDocumentFilters = this.transformFiltersForChroma(documentFilters);
+
+  return await this.search(semanticQuery, limit, collectionName, chromaMetadataFilters, chromaDocumentFilters);
 }
 
 }

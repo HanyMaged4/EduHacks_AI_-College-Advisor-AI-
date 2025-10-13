@@ -18,9 +18,10 @@ export class ChromadbService {
     return await this.client.getOrCreateCollection({
       name: name,
       metadata: { description: 'University knowledge base' },
-      embeddingFunction: null, 
+      embeddingFunction: null,
     });
   }
+
   async deleteCollection(name: string = 'university_knowledge'): Promise<void> {
     try {
       await this.client.deleteCollection({ name });
@@ -28,7 +29,7 @@ export class ChromadbService {
       // ignore if not found
     }
   }
-  // Add documents to collection
+
   async addDocuments(
     data: {
       ids: string[];
@@ -41,26 +42,29 @@ export class ChromadbService {
     const collection = await this.getOrCreateCollection(collectionName);
     await collection.add({
       ids: data.ids,
+
+      
       embeddings: data.embeddings,
       documents: data.documents,
       metadatas: data.metadatas,
     });
   }
 
-  // Query collection
-  async queryCollection(
-    queryEmbedding: number[],
-    limit: number = 5,
-    collectionName: string = 'university_knowledge',
-    opts?: { where?: any; whereDocument?: any }
-  ) {
-    const collection = await this.getOrCreateCollection(collectionName);
-    return await collection.query({
-      queryEmbeddings: [queryEmbedding],
-      nResults: limit,
-      include: ['metadatas', 'documents', 'distances'],
-      ...(opts?.where ? { where: opts.where } : {}),
-      ...(opts?.whereDocument ? { whereDocument: opts.whereDocument } : {}),
-    });
-  }
+// This is the correct way to handle options
+async queryCollection(
+  queryEmbedding: number[],
+  limit: number = 5,
+  collectionName: string = 'university_knowledge',
+  opts?: { where?: any; whereDocument?: any }
+) {
+  const collection = await this.getOrCreateCollection(collectionName);
+  const results = await collection.query({
+    queryEmbeddings: [queryEmbedding],
+    nResults: limit,
+    include: ['metadatas', 'documents', 'distances'],
+    ...(opts?.where ? { where: opts.where } : {}),
+    ...(opts?.whereDocument ? { whereDocument: opts.whereDocument } : {}),
+  });
+  return results;
+}
 }

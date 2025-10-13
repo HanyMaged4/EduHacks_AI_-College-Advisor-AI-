@@ -11,7 +11,7 @@ export class ChatService {
     private readonly prismaService: PrismaService
   ) {}
   async askQuestion(question: string) {
-    const results = await this.knowledgeService.search(question, 3);
+    const results = await this.knowledgeService.askAQuestion(question, 3);
     return {
       question,
       results,

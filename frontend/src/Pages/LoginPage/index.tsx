@@ -140,6 +140,15 @@ const Login: React.FC = () => {
                   OR
                 </Typography>
               </Divider>
+
+              <Box textAlign="center">
+                <Typography variant="body2" color="text.secondary">
+                  Don't have an account?{' '}
+                  <Link component={RouterLink} to="/signup" color="primary" fontWeight="medium">
+                    Sign up here
+                  </Link>
+                </Typography>
+              </Box>
             </Stack>
           </CardContent>
         </Card>

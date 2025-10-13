@@ -82,7 +82,7 @@ const SignupPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        backgroundColor: '#000000',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -180,27 +180,6 @@ const SignupPage: React.FC = () => {
                   OR
                 </Typography>
               </Divider>
-
-              <Stack spacing={2}>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  size="large"
-                  startIcon={<Google />}
-                  sx={{ py: 1.5 }}
-                >
-                  Continue with Google
-                </Button>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  size="large"
-                  startIcon={<GitHub />}
-                  sx={{ py: 1.5 }}
-                >
-                  Continue with GitHub
-                </Button>
-              </Stack>
 
               <Box textAlign="center">
                 <Typography variant="body2" color="text.secondary">
