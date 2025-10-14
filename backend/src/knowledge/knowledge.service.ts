@@ -25,6 +25,7 @@ export class KnowledgeService implements OnModuleInit {
     if (shouldRebuild) {
       this.logger.log('REBUILD_CHROMA is set to true. Deleting existing collection and rebuilding...');
       await this.chromadb.deleteCollection('university_knowledge');
+      await this.setUniversitiesData(path.resolve(process.cwd(), 'data'));
     }else{
       this.logger.log('REBUILD_CHROMA is not set to true. Skipping rebuilding of the collection.');
     }
