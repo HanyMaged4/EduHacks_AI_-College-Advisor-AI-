@@ -24,13 +24,21 @@ export class KnowledgeService implements OnModuleInit {
     const shouldRebuild = (process.env.REBUILD_CHROMA || '').toLowerCase() === 'true';
     if (shouldRebuild) {
       this.logger.log('REBUILD_CHROMA is set to true. Deleting existing collection and rebuilding...');
-      await this.chromadb.deleteCollection('university_knowledge');
-      await this.setUniversitiesData(path.resolve(process.cwd(), 'data'));
+      try {
+        await this.chromadb.deleteCollection('university_knowledge');
+        await this.setUniversitiesData(path.resolve(process.cwd(), 'data'));
+      } catch (err) {
+        this.logger.warn(`ChromaDB not available or failed to rebuild: ${err?.message || err}`);
+      }
     }else{
       this.logger.log('REBUILD_CHROMA is not set to true. Skipping rebuilding of the collection.');
     }
     if (process.env.NODE_ENV === 'development') {
-    await this.setUniversitiesData(path.resolve(process.cwd(), 'data'));
+      try {
+        await this.setUniversitiesData(path.resolve(process.cwd(), 'data'));
+      } catch (err) {
+        this.logger.warn(`ChromaDB not available in development mode; skipping data indexing: ${err?.message || err}`);
+      }
     }
   }
 
@@ -68,13 +76,15 @@ export class KnowledgeService implements OnModuleInit {
     const metadatas = documents.map((doc) =>
       this.sanitizeMetadata(doc.metadata)
     );
-
-    await this.chromadb.addDocuments(
-      { ids, embeddings, documents: contents, metadatas },
-      collectionName
-    );
-
-    this.logger.log(`Added ${documents.length} documents to '${collectionName}'`);
+    try {
+      await this.chromadb.addDocuments(
+        { ids, embeddings, documents: contents, metadatas },
+        collectionName
+      );
+      this.logger.log(`Added ${documents.length} documents to '${collectionName}'`);
+    } catch (err) {
+      this.logger.error(`Failed to add documents to ChromaDB: ${err?.message || err}`);
+    }
   }
 
 async search(
@@ -127,8 +137,12 @@ async setUniversitiesData(
   }
 
   this.logger.log(`Number of documents to index: ${data.length}`);
-  await this.addDocuments(data, collectionName);
-  this.logger.log(`Indexed data from folder: ${folderPath}`);
+  try {
+    await this.addDocuments(data, collectionName);
+    this.logger.log(`Indexed data from folder: ${folderPath}`);
+  } catch (err) {
+    this.logger.warn(`Skipping indexing due to ChromaDB error: ${err?.message || err}`);
+  }
   }
 
  extractJsonFromMarkdown(response: string): string | null {
