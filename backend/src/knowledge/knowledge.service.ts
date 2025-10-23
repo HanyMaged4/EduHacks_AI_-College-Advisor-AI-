@@ -5,6 +5,7 @@ import path from 'path';
 import { stringify } from 'querystring';
 import { UniversityDto } from 'src/knowledge/dto/UniversityDto';
 import { GeminiService } from './gemini.service';
+import { ConfigService } from '@nestjs/config';
 
 export interface DocumentInput {
   content: string;
@@ -18,10 +19,11 @@ export class KnowledgeService implements OnModuleInit {
   constructor(
     private chromadb: ChromadbService,
     private embedding: EmbeddingService,
-    private readonly geminiService: GeminiService
+    private readonly geminiService: GeminiService,
+    private readonly configService: ConfigService
   ) {}
  async onModuleInit() {
-    const shouldRebuild = (process.env.REBUILD_CHROMA || '').toLowerCase() === 'true';
+    const shouldRebuild = (this.configService.get('REBUILD_CHROMA') || '').toLowerCase() === 'true';
     if (shouldRebuild) {
       this.logger.log('REBUILD_CHROMA is set to true. Deleting existing collection and rebuilding...');
       try {
@@ -33,7 +35,7 @@ export class KnowledgeService implements OnModuleInit {
     }else{
       this.logger.log('REBUILD_CHROMA is not set to true. Skipping rebuilding of the collection.');
     }
-    if (process.env.NODE_ENV === 'development') {
+    if (this.configService.get('NODE_ENV') === 'development') {
       try {
         await this.setUniversitiesData(path.resolve(process.cwd(), 'data'));
       } catch (err) {

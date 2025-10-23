@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { HumanMessage } from "@langchain/core/messages";
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GeminiService {
+
   private chat: ChatGoogleGenerativeAI;
 
-    constructor() {
+    constructor(private readonly configService: ConfigService) {
       this.chat = new ChatGoogleGenerativeAI({
-        apiKey: process.env.GOOGLE_API_KEY,
+        apiKey: this.configService.get('GOOGLE_API_KEY'),
         model: "gemini-2.0-flash-lite",
         maxOutputTokens: 2048,
       });
